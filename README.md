@@ -17,9 +17,15 @@ This is a single-page web app with no server. All data stays in the browser that
 
 Pages from a private repository needs a paid GitHub plan (Pro, Team or Enterprise). On a free plan the repository must be public for Pages to work. A published Pages site is public to anyone with the link, even when the repository is private, unless you use GitHub Enterprise Cloud access control.
 
+## Languages
+
+English, Arabic (right-to-left) and Tamil. Pick one under **Settings → Language** or on the sign-in screen; the first visit follows the phone's language.
+
+The interface is written in English. After each render, the app swaps every English text node for its translation from `window.BASKAR_I18N` in `index.html`. Keys are the English text with numbers replaced by `{0}`, `{1}` and names by `{*}`. To fix or add a translation, edit that object; English text with no entry stays in English. Payee names, wallets, goals and remarks are never translated. The translations were machine-written and need review by native speakers.
+
 ## Tests
 
-The app has a built-in self-check covering the bank-SMS reader, the daily-budget maths, one-line entry and CSV parsing. Run it on a phone from **Settings → Run self-check**, or from a computer:
+The app has a built-in self-check covering the bank-SMS reader, the daily-budget maths, one-line entry, CSV parsing and the translation dictionaries. Run it on a phone from **Settings → Run self-check**, or from a computer:
 
 ```
 npm install --no-save playwright && npx playwright install chromium
@@ -39,4 +45,4 @@ See `CHANGELOG.md`, or **Settings → Version history** in the app.
 - Chart.js 4.4.1 (MIT)
 - PapaParse 5.4.1 (MIT)
 
-Fonts: Hanken Grotesk and IBM Plex Mono from Google Fonts (SIL Open Font License).
+Fonts: Hanken Grotesk, IBM Plex Mono, Noto Sans Arabic and Noto Sans Tamil from Google Fonts (SIL Open Font License).

@@ -2,6 +2,13 @@
 
 The same list is in the app under **Settings → Version history**. Newest first.
 
+## 1.7 · 2 Nov 2026
+- Arabic (right-to-left) and Tamil, picked in Settings or on the sign-in screen; it follows your phone's language the first time
+- Dates and currency names follow the chosen language; amounts keep Western digits so they match your bank
+- Your own data (payee names, wallets, goals, remarks) is never translated
+- Self-check adds language checks (140 checks)
+- Translations are machine-written and still need review by native speakers
+
 ## 1.6 · 2 Nov 2026
 - One-line entry: type "15 shawarma lunch" or "karak 3 cash" and the form fills itself
 - Sheet headers stay fixed while the content scrolls
