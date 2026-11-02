@@ -13,7 +13,7 @@ This is a single-page web app with no server. All data stays in the browser that
 
 ## Files
 
-- `index.html` is the whole app
+- `index.html` is the page; the app is in `css/app.css` and `js/` (one file per feature, plain scripts, no build step)
 - `apple-touch-icon.png`, `icon-512.png` and `manifest.webmanifest` let you add it to an iPhone home screen
 
 ## Publish with GitHub Pages
@@ -28,7 +28,7 @@ Pages from a private repository needs a paid GitHub plan (Pro, Team or Enterpris
 
 English, Arabic (right-to-left) and Tamil. Pick one under **Settings → Language** or on the sign-in screen; the first visit follows the phone's language.
 
-The interface is written in English. After each render, the app swaps every English text node for its translation from `window.BASKAR_I18N` in `index.html`. Keys are the English text with numbers replaced by `{0}`, `{1}` and names by `{*}`. To fix or add a translation, edit that object; English text with no entry stays in English. Payee names, wallets, goals and remarks are never translated. The translations were machine-written and need review by native speakers.
+The interface is written in English. After each render, the app swaps every English text node for its translation from the table in `js/i18n-rows.js`. Keys are the English text with numbers replaced by `{0}`, `{1}` and names by `{*}`. To fix or add a translation, edit that object; English text with no entry stays in English. Payee names, wallets, goals and remarks are never translated. The translations were machine-written and need review by native speakers.
 
 ## Tests
 
@@ -39,7 +39,7 @@ npm install --no-save playwright && npx playwright install chromium
 node tests/run-tests.js
 ```
 
-The bank messages in the checks are examples written in common formats, not real messages. Add new formats to `selfTestSms()` in `index.html`.
+The bank messages in the checks are examples written in common formats, not real messages. Add new formats to `selfTestSms()` in `js/core/selftest.js`.
 
 ## Version history
 

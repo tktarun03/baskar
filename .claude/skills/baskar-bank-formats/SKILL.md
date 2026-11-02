@@ -21,7 +21,7 @@ Keep the exact wording, spacing, line breaks, capitalization and date format. Th
 
 ### 2. Add a test case
 
-In `index.html`, search for `function selfTestSms()` and add an object to the returned array:
+Open `js/core/selftest.js`, find `function selfTestSms()` and add an object to the returned array:
 
 ```js
 { name: 'QNB debit card, Arabic month', acct: 'QAR',
@@ -42,7 +42,7 @@ In `index.html`, search for `function selfTestSms()` and add an object to the re
 node tests/run-tests.js
 ```
 
-### 4. Fix the parser (section `Bank SMS reader + CSV`)
+### 4. Fix the parser (`js/core/parse.js`)
 
 | Problem | Where to look |
 |---|---|

@@ -1,17 +1,21 @@
 # BasKar architecture
 
-How the app works inside. Read `AGENTS.md` first for the repo map and rules. Everything described here lives in `index.html`.
+How the app works inside. Read `AGENTS.md` first for the repo map and rules. `AGENTS.md` also has a table of which file holds which feature. File paths below are relative to the repo root.
 
-## Start-up order (`Boot` section)
+## Start-up order (`js/app/boot.js`)
 
-0. The launch screen (`#splash`) paints at once. A small inline script fills in this device's app name, logo and colour from `localStorage.bk_splash`, before the CDN libraries load. It removes itself after 8 s even if start-up fails.
+0. `index.html` loads `css/app.css` in the head, so the launch screen (`#splash`) paints at once. A small inline script fills in this device's app name, logo and colour from `localStorage.bk_splash`, before the CDN libraries load. It removes itself after 8 s even if start-up fails.
 1. `Store.init()` picks the storage mode: cookies, then local storage, then memory.
 2. `applyBrand()` loads white-label settings from `bk_brand`.
 3. The language comes from `bk_lang`, or from the phone language on the first visit. `applyLang()` sets `<html lang dir>`.
 4. The session (`bk_sess`) reopens the last profile, or the sign-in screen appears.
 5. `renderAll()` draws the page, then `hideSplash()` fades the launch screen. It waits at least 400 ms from page start so the screen doesn't flash, and at most 1.2 s for fonts. If `localStorage.bk_seen_v` differs from `APP_VERSION`, a "What's new" notice shows.
 
-## State
+## Loading
+
+`index.html` loads plain scripts in this order: the CDN libraries, then `js/i18n-rows.js`, then `js/core/*`, `js/ui/*`, `js/app/*` (except boot), every `js/features/*` file A–Z, and finally `js/app/boot.js`. They share one global scope. Statements that run at load time (`var` initializers, listeners) may use only earlier files; function bodies run later and can call anything. Features register their button handlers with `Object.assign(ACT, { … })`. All links carry `?v=<version>` for cache-busting, and the self-check fails if any file is on a different version.
+
+## State (`js/app/state.js`)
 
 All UI state is one object, `S`:
 
@@ -46,7 +50,7 @@ All UI state is one object, `S`:
 
 Category keys (`CATS`) are `food`, `groceries`, `shopping`, `transport`, `coffee`, `fun`, `health`, `travel`, `other` and `bills`. `bills` counts as a fixed cost, not against the daily budget.
 
-## Budget maths (`calc()`)
+## Budget maths (`calc()` in `js/core/budget.js`)
 
 ```
 disc        = max(income − Σ fixed, 0)                    money for the cycle
@@ -59,28 +63,28 @@ tomorrow    = max(disc − before − used today, 0) / (days left − 1)
 
 Overspending spreads itself over the remaining days automatically. Money moved to a goal counts as used, so it can't be spent twice. The self-check has fixed examples for these formulas; keep them passing.
 
-## Rendering
+## Rendering (`js/app/render.js`)
 
 - The app builds plain HTML strings and has no framework. `renderAll()` rebuilds `#app` as the scroller (`renderMain()` or an auth view), the tab bar and the + button.
 - `renderSheet()` routes `S.sheet.type` to a `sheetXxx()` function. `sheetFrame()` splits the output at `<!--/head-->` into a fixed header (`.sheet-top`) and a scrolling body (`.sheet-body`).
-- Clicks go through one delegated listener. Elements carry `data-act="name"`, and `ACT[name](el)` handles them. Forms submit through their own handlers in the same section.
+- Clicks go through one delegated listener in `js/app/actions.js`. Elements carry `data-act="name"`, and `ACT[name](el)` handles them. Each feature file adds its own handlers. Form submits are routed by form id in `js/app/actions.js` to save functions in the feature files (e.g. `saveGoal` in `goals.js`).
 - `toast(title, body, { undo | action })` shows the bottom notice. Undo uses `undoAdd()` or `undoDelete()`.
-- Charts (Chart.js) are drawn only on the Insights tab by `drawCharts()`, and destroyed on other tabs.
+- Charts (Chart.js) are drawn only on the Insights tab by `drawCharts()` (`js/features/insights.js`), and destroyed on other tabs.
 - Icons are inline SVG from `ic(name, size)`. Back and chevron icons get the class `mir`, which mirrors them in right-to-left.
 
-## Storage (`Store`)
+## Storage (`Store` in `js/core/storage.js`)
 
 - `Store.set(key, obj)`: `JSON.stringify` → `LZString.compressToEncodedURIComponent` → chunks of 3,600 characters → cookies `key_0…key_n` plus `key_n` (the count). The limit is 45 chunks; past that, or if cookies are refused, the value goes to local storage.
 - At the top level (GitHub Pages) cookies are first-party: `SameSite=Lax`, with the path scoped to the app folder. When embedded in an iframe they are `SameSite=None; Secure; Partitioned`.
 - Device-wide keys: `bk_idx`, `bk_sess`, `bk_brand`, `bk_lang`. Per profile: `bk_p_<id>`. Local storage only: `bk_seen_v`, and `bk_splash` (a plain copy of the brand for the launch screen, written by `applyBrand()`).
 
-## Bank SMS and CSV
+## Bank SMS and CSV (parsers in `js/core/parse.js`; screens in `js/features/bank-sms.js` and `csv.js`)
 
 - `parseSms(text)` normalizes whitespace and skips OTPs and promos (`SMS_SKIP`). It then reads the amount and currency (`smsMoney`), decides debit or credit (`SMS_DEBIT` / `SMS_CREDIT`, whichever comes first), and gets the payee from "at / to / VPA / Info" patterns. It also reads the date and time, guesses the category (`guessCat`), the meal from the time, and the wallet from the last four card digits found in wallet names. Payee rules (`applyRule`) apply last.
 - If the SMS currency differs from the account's, the user enters an exchange rate. It's saved in `fx`, and the original amount stays in `txn.orig`.
 - `parseCsv()` uses PapaParse and finds the header row below any junk lines. `detectCols()` guesses the date, description, debit, credit and amount columns. The user confirms the column mapping before import. Possible duplicates (same amount, day and payee) are unticked by default.
 
-## Translation (i18n)
+## Translation (`js/ui/i18n.js`, table in `js/i18n-rows.js`)
 
 - The UI is written in English. A `MutationObserver` on `document.body` passes every new text node, plus the `placeholder`, `aria-label`, `title` and `alt` attributes, through `trText()`.
 - `trText()` swaps the white-label names back to the defaults. It then normalizes numbers and amounts to `{0}`, `{1}` (`NUM_RE`), looks up `BASKAR_I18N[lang][key]`, and falls back to wildcard keys with `{*}` for names. Finally it refills the numbers. In Arabic, numbers are wrapped in direction isolates so amounts like ₹1,250 don't reverse.
@@ -88,7 +92,7 @@ Overspending spreads itself over the remaining days automatically. Money moved t
 - **Consequence:** a sentence that mixes fixed text with user data must be split into separate elements, or the key never matches. Use `dots([a, b, c])`, which joins the parts with " · ", each in its own `<span>`.
 - Dates use `toLocaleDateString(LOC())`: `ar-u-nu-latn` (Arabic with 0–9 digits) or `ta-IN`. Currency names come from `Intl.DisplayNames`.
 
-## White label
+## White label (`js/ui/brand.js`; settings page in `js/features/branding.js`)
 
 `BR` holds the app name, logo (a data URL, shrunk to fit in a cookie), accent colour, mascot name and catchphrase. These are stored per device in `bk_brand`. `brandify(html)` replaces "BasKar", "Chillar" and "Bas kar bhai." in rendered output. Write the default names in code and let `brandify` swap them.
 

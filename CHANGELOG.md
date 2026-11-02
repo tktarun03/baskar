@@ -2,6 +2,12 @@
 
 The same list is in the app under **Settings → Version history**. Newest first.
 
+## 1.9 · 2 Nov 2026
+- The app is split into one file per feature behind a small `index.html`: `css/app.css`, `js/core`, `js/ui`, `js/app` and `js/features` (plain scripts, no build step)
+- Every CSS and JS link carries `?v=1.9`, so iPhones fetch the new files together after an update
+- `tests/run-tests.js` now also checks the file structure: every file loaded, one version everywhere, no duplicate top-level names
+- Self-check: 144 checks
+
 ## 1.8 · 2 Nov 2026
 - A launch screen while the app loads, showing your own app name, logo and colour
 - Translations moved to one easy-to-edit row per sentence (`BASKAR_I18N_ROWS`)

@@ -1,12 +1,12 @@
 # BasKar roadmap
 
-Updated 2 Nov 2026, at version 1.8. Items are ordered by value to users, then by risk. Each item says why it matters and what "done" means. Change this file in the same commit that ships or reprioritizes an item.
+Updated 2 Nov 2026, at version 1.9. Items are ordered by value to users, then by risk. Each item says why it matters and what "done" means. Change this file in the same commit that ships or reprioritizes an item.
 
 **Status key:** ✅ shipped · 🔨 in progress · ⏭ next · 🧊 later · ❓ needs a decision
 
 ## Where we are
 
-BasKar is a single-file web app on GitHub Pages:
+BasKar is a no-build web app on GitHub Pages (one small page, a CSS file and one script per feature):
 
 - one daily number, goals, category limits, bills and subscriptions
 - bank SMS and CSV import, payee rules, weekly review
@@ -19,7 +19,7 @@ All data lives in the user's browser. That makes it private and free to run, and
 
 | # | Item | Why | Done when |
 |---|---|---|---|
-| 1 | ❓ **Split `index.html` into modules** | ~3,100 lines in one file slows every change and makes conflicts likely. | `index.html` is a small shell. CSS is in `css/`, code in `js/` as native ES modules (no build step), and translations in `js/i18n.js`. Tests pass. The Claude artifact is published as a multi-file bundle. |
+| 1 | ✅ **Split `index.html` into feature files** (1.9) | ~3,100 lines in one file slowed every change and made conflicts likely. | Done: `index.html` is a ~110-line shell, with `css/app.css`, `js/core`, `js/ui`, `js/app` and 22 files in `js/features`. Plain scripts share one global scope; structure tests guard load order, versions and name clashes. |
 | 2 | ⏭ **Offline support (service worker)** | It fails offline today, and iOS Home Screen users expect an app to open without signal. | The app opens and logs spends in airplane mode. The CDN libraries and fonts are cached. An update prompt appears when a new version is deployed. |
 | 3 | ⏭ **Backup you can't forget** | Safari can delete site data after about 7 days without a visit. | A one-tap backup file (`.baskar.json`, optional password encryption). A reminder appears when the last backup is more than 7 days old. Restore is tested. |
 | 4 | ⏭ **Native review of Arabic and Tamil** | The 1.7 translations were machine-written. | A fluent speaker for each language has reviewed every row, and plural forms are fixed (Arabic needs 1, 2, 3–10 and 11+ forms). |
@@ -51,6 +51,7 @@ All data lives in the user's browser. That makes it private and free to run, and
 
 - **1.0:** no server; data stays on the device. That's still true. Revisit only for item 14 or 15.
 - **1.7:** translations are applied after render (English is the source). This is cheap to maintain, but every new string needs a row.
+- **1.9:** split into plain scripts that share one global scope, **not** ES modules (`import`/`export`). ES modules don't load from `file://`, which would break opening the app locally and the simple test runner, and they need every cross-file name listed by hand. Moving to ES modules later is mechanical if the app outgrows this.
 - **1.8:** we will **not** split the app into one HTML page per feature. Separate pages would reload the libraries and lose in-memory state on every tab change, and they would break the bottom-sheet flow. Splitting into JS/CSS modules behind one page is the plan instead (item 1).
 
 ## Known limits we accept for now

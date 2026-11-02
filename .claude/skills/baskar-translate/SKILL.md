@@ -8,7 +8,7 @@ description: Add or fix BasKar translations (Arabic, Tamil) or add a new languag
 ## How it works (one minute)
 
 - The UI is written in English. After every render, a MutationObserver swaps each English text node, and the `placeholder`, `aria-label`, `title` and `alt` attributes, for its translation.
-- The table is `window.BASKAR_I18N_ROWS` near the top of `index.html`. It has one row per string: `[English, Arabic, Tamil]`, sorted A–Z.
+- The table is `window.BASKAR_I18N_ROWS` in `js/i18n-rows.js`. It has one row per string: `[English, Arabic, Tamil]`, sorted A–Z. The translator itself is `js/ui/i18n.js`.
 - In the English key:
   - Numbers and amounts become `{0}`, `{1}`… in order: "₹1,250", "QAR 15.50", "80%", "3".
   - A name or category becomes `{*}`. Use this only when a node mixes fixed text with a name you can't split out.
@@ -52,10 +52,10 @@ Switch the app to Arabic or Tamil, open the screen, and look for English. To lis
 
 ## Add a new language (e.g. Hindi `hi`, Malayalam `ml`, Urdu `ur`)
 
-1. In `LANGS` (the `Languages` section), add `{ name: 'हिन्दी', dir: 'ltr', locale: 'hi-IN' }`. Urdu uses `dir: 'rtl'` and `locale: 'ur-u-nu-latn'`.
-2. Make rows 4 columns wide, `[English, Arabic, Tamil, Hindi]`. Update the loader block under the table and the self-check `Languages` group to read column 4.
+1. In `LANGS` (`js/ui/i18n.js`), add `{ name: 'हिन्दी', dir: 'ltr', locale: 'hi-IN' }`. Urdu uses `dir: 'rtl'` and `locale: 'ur-u-nu-latn'`.
+2. Make rows 4 columns wide, `[English, Arabic, Tamil, Hindi]`. Update the loader at the bottom of `js/i18n-rows.js` and the self-check `Languages` group (`js/core/selftest.js`) to read column 4.
 3. Add the language to `langSeg()` (the picker), using class `four` or a `<select>` if there are more than 3 options. Also add it to `detectLang()`.
-4. Load a Google Noto font for the script in the `<link>` near the top, and add any `:lang(xx)` CSS (line height, letter-spacing reset).
+4. Add a Google Noto font for the script to the fonts `<link>` in `index.html`, and add any `:lang(xx)` CSS in `css/app.css` (line height, letter-spacing reset).
 5. Translate every row. Run the tests, then follow the release playbook.
 
 ## Check
