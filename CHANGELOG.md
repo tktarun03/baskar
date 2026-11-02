@@ -2,6 +2,12 @@
 
 The same list is in the app under **Settings → Version history**. Newest first.
 
+## 1.8 · 2 Nov 2026
+- A launch screen while the app loads, showing your own app name, logo and colour
+- Translations moved to one easy-to-edit row per sentence (`BASKAR_I18N_ROWS`)
+- Guide and playbooks in the repository so any AI assistant or developer can safely update the app: `AGENTS.md`, `docs/ARCHITECTURE.md`, `.claude/skills/`, `ROADMAP.md`
+- Self-check: 142 checks
+
 ## 1.7 · 2 Nov 2026
 - Arabic (right-to-left) and Tamil, picked in Settings or on the sign-in screen; it follows your phone's language the first time
 - Dates and currency names follow the chosen language; amounts keep Western digits so they match your bank

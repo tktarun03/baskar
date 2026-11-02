@@ -4,6 +4,13 @@ A daily budget app: it turns your monthly income into one number, what you can s
 
 This is a single-page web app with no server. All data stays in the browser that opens it (compressed JSON in cookies, falling back to local storage).
 
+## For developers and AI assistants
+
+- `AGENTS.md`: how the code is organised, the rules, and how to test and ship. Start here.
+- `docs/ARCHITECTURE.md`: how the app works inside.
+- `.claude/skills/`: step-by-step playbooks for releasing, translating, adding bank formats and changing the UI.
+- `ROADMAP.md`: what's next and why.
+
 ## Files
 
 - `index.html` is the whole app
