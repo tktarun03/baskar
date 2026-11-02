@@ -1,0 +1,23 @@
+{
+  "name": "BasKar",
+  "short_name": "BasKar",
+  "description": "A daily budget that tells you what you can safely spend today.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#F4F5F6",
+  "theme_color": "#F4F5F6",
+  "icons": [
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
