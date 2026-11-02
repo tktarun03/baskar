@@ -15,7 +15,12 @@ function initials(name) { var w = String(name || '?').replace(/^demo\s*·\s*/i, 
 
 function firstName(name) { return String(name || '').replace(/^demo\s*·\s*/i, '').trim().split(/\s+/)[0] || 'there'; }
 
-function avatar(m, size) { size = size || 40; return '<span class="avatar" style="width:' + size + 'px;height:' + size + 'px;font-size:' + Math.round(size * 0.36) + 'px">' + esc(initials(m.name)) + '</span>'; }
+function avatar(m, size) {
+  size = size || 40;
+  var st = 'width:' + size + 'px;height:' + size + 'px;font-size:' + Math.round(size * 0.36) + 'px';
+  if (m && m.photo && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(m.photo)) return '<img class="avatar" src="' + m.photo + '" alt="" style="' + st + '">';
+  return '<span class="avatar" style="' + st + '">' + esc(initials(m && m.name)) + '</span>';
+}
 
 function walletName(id) { var w = (S.p.wallets || []).filter(function (x) { return x.id === id; })[0]; return w ? w.name : 'No wallet'; }
 
@@ -33,6 +38,7 @@ function applyTheme() {
   if (t === 'light' || t === 'dark') root.setAttribute('data-theme', t);
   else if (hostTheme) root.setAttribute('data-theme', hostTheme);
   else root.removeAttribute('data-theme');
+  applyAccent();
   setTimeout(function () { applyingTheme = false; }, 0);
 }
 

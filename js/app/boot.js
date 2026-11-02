@@ -49,6 +49,10 @@ try {
   }
 } catch (e) { }
 
+/* No pinch zoom. iOS Safari ignores user-scalable=no, so cancel its gesture events too. */
+['gesturestart', 'gesturechange', 'gestureend'].forEach(function (t) { document.addEventListener(t, function (e) { e.preventDefault(); }, { passive: false }); });
+document.addEventListener('touchmove', function (e) { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+
 /* Face ID: find out once whether this browser can do it, then redraw if a screen offers it. */
 passkeyCheck().then(function (ok) { if (ok && (S.lock || !S.p || (S.sheet && S.sheet.type === 'settings'))) renderAll(); });
 

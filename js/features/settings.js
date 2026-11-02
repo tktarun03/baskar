@@ -7,11 +7,12 @@ function sheetSettings() {
   var m = meta() || {}, th = S.p.settings.theme || 'system', u = Store.usage('bk_p_' + S.pid, S.p), c = calc(S.p);
   var whereTxt = u.where === 'cookie' ? 'Cookies' : u.where === 'local' ? 'Local storage' : 'Not saved';
   return sheetHead('Settings') +
-    '<section class="card"><div class="row">' + avatar(m, 46) + '<div class="grow"><strong style="font-size:16px">' + esc(m.name) + '</strong><span class="hint">' + dots([m.email || 'No email', S.p.demo ? 'Example data' : '']) + '</span></div></div>' +
+    '<section class="card"><button type="button" class="row prow-btn" data-act="profile-edit">' + avatar(m, 52) + '<span class="grow"><strong style="font-size:16px">' + esc(m.name) + '</strong><span class="hint">' + dots([m.email || 'No email', S.p.demo ? 'Example data' : '']) + '</span><span class="hint link">Edit profile</span></span>' + ic('chev', 18) + '</button>' +
     '<div class="duo"><button type="button" class="btn quiet" data-act="profiles">' + ic('users', 18) + ' Switch</button><button type="button" class="btn quiet" data-act="signout">' + ic('logout', 18) + ' Sign out</button></div></section>' +
     '<span class="eyebrow pad">App</span>' +
     '<section class="card tight">' + setItem('brand', 'pen', 'App name and branding', esc(BR.name) + (BR.logo ? ' · logo set' : '') + (BR.accent ? ' · custom colour' : '')) +
     '<div class="set-row stack-xs"><span class="label">Language</span>' + langSeg() + '</div>' +
+    '<div class="set-row stack-xs"><span class="label">Colour</span>' + colourRow() + '</div>' +
     '<div class="set-row stack-xs"><span class="label">Theme</span><div class="seg three" role="group" aria-label="Theme">' + [['system', 'System'], ['light', 'Light'], ['dark', 'Dark']].map(function (x) { return '<button type="button" data-act="theme" data-k="' + x[0] + '" aria-pressed="' + (th === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div></div>' +
     '<div class="set-row setrow"><div class="grow"><span class="label" id="hide-lbl">Hide amounts</span><span class="hint">Masks every number. The eye at the top does the same.</span></div><button type="button" class="switch" role="switch" aria-labelledby="hide-lbl" aria-checked="' + hidden() + '" data-act="privacy"><span></span></button></div>' +
     '<div class="set-row setrow"><div class="grow"><span class="label" id="roast-lbl">Roast mode</span><span class="hint">Chillar comments on your spending. Off gives plain, neutral messages.</span></div><button type="button" class="switch" role="switch" aria-labelledby="roast-lbl" aria-checked="' + !!S.p.settings.roast + '" data-act="set-roast"><span></span></button></div></section>' +

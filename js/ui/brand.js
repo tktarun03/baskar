@@ -43,7 +43,8 @@ function applyBrand(b) {
   b = b || BR;
   var st = document.getElementById('brand-css');
   if (!st) { st = document.createElement('style'); st.id = 'brand-css'; (document.head || document.documentElement).appendChild(st); }
-  st.textContent = brandCss(HEX_RE.test(b.accent || '') ? b.accent : '');
+  var acc = S.p && S.p.settings && HEX_RE.test(S.p.settings.accent || '') ? S.p.settings.accent : b.accent;
+  st.textContent = brandCss(HEX_RE.test(acc || '') ? acc : '');
   try { document.title = b.name; } catch (e) { }
   try { localStorage.setItem('bk_splash', JSON.stringify({ name: b.name, logo: b.logo || '', accent: b.accent || '', mascot: !!b.showMascot })); } catch (e) { }
   if (S.tab === 'insights' && S.p) setTimeout(drawCharts, 0);

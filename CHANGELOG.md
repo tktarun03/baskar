@@ -2,6 +2,13 @@
 
 The same list is in the app under **Settings → Version history**. Newest first.
 
+## 2.2 · 2 Nov 2026
+- Edit profile (`js/features/profile.js`): photo (centre-cropped to 160 px JPEG, ~3–8 KB), name, email. Stored in `bk_idx` with the account list, so it shows before unlocking and is not encrypted.
+- Change password: checks the current one, derives a new key, re-seals the data on `Vault.queue` before updating the stored hash, so a failure can't lock anyone out. Face ID is turned off (it wrapped the old key) and "Stay unlocked" is moved to the new key.
+- Theme colour per account (`settings.accent`), overriding the device's brand colour; `applyAccent()` runs with `applyTheme()`
+- Pinch and double-tap zoom disabled: viewport `user-scalable=no`, `touch-action: pan-x pan-y`, and cancelled `gesture*` events for iOS Safari, which ignores the viewport setting
+- `avatar()` shows the photo everywhere: header, settings, account picker, sign-in and PIN screens
+
 ## 2.1 · 2 Nov 2026
 - Face ID / fingerprint unlock (`js/core/passkey.js`): a platform passkey with the WebAuthn PRF extension produces a secret; HKDF turns it into an AES-GCM key that wraps the account's data key, stored per device as `bk_bio_<id>`. Unlocking decrypts the data key, so it's real encryption, not a screen. Shown only where `isUserVerifyingPlatformAuthenticatorAvailable()` is true, on the website (not inside Claude). If Safari needs a second tap to hand over the PRF secret, a "Finish" action completes setup.
 - PIN screen lock (`js/features/quick-unlock.js`): only with "Stay unlocked"; asked on a cold open and after 60 s in the background; 5 wrong tries turn "Stay unlocked" off and require the password. Labelled as not adding encryption.

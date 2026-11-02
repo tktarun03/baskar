@@ -77,6 +77,7 @@ There is **no build step and no bundler**. `index.html` loads plain `<script>` f
 | Encryption of saved data | `js/core/vault.js` (used by `saveProfile` / `openProfile` in `js/app/state.js`) |
 | Face ID unlock (passkey + PRF) | `js/core/passkey.js` |
 | PIN screen lock, lock screen, Face ID buttons | `js/features/quick-unlock.js` |
+| Edit profile (photo, name, email), change password, theme colour | `js/features/profile.js` |
 | Backup file, restore, Today reminders | `js/features/backup.js` |
 | Saving a file (download) | `js/app/files.js` |
 | Offline caching | `sw.js` |
@@ -128,4 +129,5 @@ Pushing to `main` publishes to GitHub Pages ("Deploy from a branch", root folder
 - **No password recovery.** Passwords are hashed locally, and the data is encrypted with them; a lost password means the data is gone. Backup files are plain JSON.
 - **Shared global scope.** Don't name a local variable after a global helper (`dots`, `money`, `esc`, `ic`, `S`…); this has caused a bug before. Don't reuse a top-level name in another file: the later file silently wins (the test catches it).
 - **Re-renders replace the DOM.** Typing into an input that triggers `renderAll()` loses focus. For live input, update elements in place (see the SMS exchange-rate rows) instead of re-rendering.
+- **Zoom is disabled on purpose** (2.2, owner's request): viewport `user-scalable=no`, `touch-action` in `css/app.css`, and `gesture*` events cancelled in `boot.js`. Keep text readable without zoom: 16px+ inputs, no text below 11px.
 - **iOS date inputs** ignore `width:100%` unless they have `appearance:none` and `min-width:0`. That's already in the CSS; keep it.

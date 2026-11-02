@@ -5,6 +5,12 @@
 
 /* Version history: add a new entry at the top with every release. */
 var RELEASES = [
+  { v: '2.2', date: '2 Nov 2026', notes: [
+    'Profile: add a photo and edit your name and email (tap your name in Settings)',
+    'Change password: your data is re-encrypted with the new one',
+    'Theme colour for each account: Brass, Ocean, Forest, Rose, Grape, Saffron or Graphite',
+    'Pinch and double-tap zoom are turned off so the app feels like a native one'
+  ] },
   { v: '2.1', date: '2 Nov 2026', notes: [
     'Unlock with Face ID: your face opens your encrypted data, and your password still works (iOS 18.4 or later, on the website)',
     'PIN lock: with “Stay unlocked” on, a 4-digit PIN guards the app when you open it or come back after a minute'

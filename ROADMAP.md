@@ -1,6 +1,6 @@
 # BasKar roadmap
 
-Updated 2 Nov 2026, at version 2.1. Items are ordered by value to users, then by risk. Each item says why it matters and what "done" means. Change this file in the same commit that ships or reprioritizes an item.
+Updated 2 Nov 2026, at version 2.2. Items are ordered by value to users, then by risk. Each item says why it matters and what "done" means. Change this file in the same commit that ships or reprioritizes an item.
 
 **Status key:** ✅ shipped · 🔨 in progress · ⏭ next · 🧊 later · ❓ needs a decision
 
@@ -56,6 +56,7 @@ All data lives in the user's browser. That makes it private and free to run, and
 
 - **1.0:** no server; data stays on the device. That's still true. Revisit only for item 14 or 15.
 - **1.7:** translations are applied after render (English is the source). This is cheap to maintain, but every new string needs a row.
+- **2.2:** pinch and double-tap zoom turned off at the owner's request, for a native feel. This is an accessibility cost (people who zoom to read lose that). If it comes up, add a text-size setting rather than re-enabling zoom.
 - **1.9:** split into plain scripts that share one global scope, **not** ES modules (`import`/`export`). ES modules don't load from `file://`, which would break opening the app locally and the simple test runner, and they need every cross-file name listed by hand. Moving to ES modules later is mechanical if the app outgrows this.
 - **1.8:** we will **not** split the app into one HTML page per feature. Separate pages would reload the libraries and lose in-memory state on every tab change, and they would break the bottom-sheet flow. Splitting into JS/CSS modules behind one page is the plan instead (item 1).
 

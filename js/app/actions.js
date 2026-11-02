@@ -35,6 +35,7 @@ document.addEventListener('click', function (e) {
 function onField(e) {
   var el = e.target;
   if (el.id === 'b-logo') { if (e.type === 'change') processLogo(el.files && el.files[0]); return; }
+  if (el.id === 'pf-photo') { if (e.type === 'change' && el.files && el.files[0]) { processPhoto(el.files[0]); el.value = ''; } return; }
   if (el.id === 'bk-file') {
     if (e.type !== 'change' || !el.files || !el.files[0]) return;
     var bf = el.files[0], br = new FileReader();
@@ -120,6 +121,8 @@ document.addEventListener('submit', function (e) {
   else if (id === 'goal-form') saveGoal();
   else if (id === 'contrib-form') saveContrib();
   else if (id === 'brand-form') saveBrand();
+  else if (id === 'profile-form') saveProfileInfo();
+  else if (id === 'pw-form') changePassword();
 });
 
 document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && S.sheet) closeSheet(); });
