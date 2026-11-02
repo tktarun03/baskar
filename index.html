@@ -343,12 +343,21 @@ input[type=number] { -moz-appearance: textfield; }
 .receipt .rmuted { color: var(--paper-muted); }
 .stamp { position: absolute; right: 12px; top: 56px; padding: 4px 10px; border: 1.5px solid var(--sc); border-radius: 6px; color: var(--sc); font-size: 17px; font-weight: 500; letter-spacing: 0.1em; transform: rotate(-12deg); opacity: 0.85; background: var(--paper); }
 
-.toast { position: fixed; top: calc(14px + env(safe-area-inset-top, 0px)); left: 50%; z-index: 60; width: min(420px, calc(100% - 32px)); transform: translateX(-50%); display: flex; flex-direction: column; gap: 2px; padding: 14px 18px; border-radius: 18px; background: var(--notif-bg); color: var(--notif-ink); box-shadow: var(--shadow); font-size: 14px; }
-.toast { pointer-events: none; }
+/* Notices slide up from the bottom, above the tab bar and the + button (to the top edge of the screen on sign-in pages). */
+.toast { position: fixed; left: 50%; bottom: calc(148px + env(safe-area-inset-bottom, 0px)); z-index: 60; width: min(420px, calc(100% - 32px)); transform: translateX(-50%); display: flex; align-items: flex-start; gap: 8px; padding: 14px 8px 14px 18px; border-radius: 18px; background: var(--notif-bg); color: var(--notif-ink); box-shadow: var(--shadow); font-size: 14px; }
+.app.is-auth ~ .toast { bottom: calc(20px + env(safe-area-inset-bottom, 0px)); }
 [hidden] { display: none !important; }
+.toast-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding-top: 2px; }
 .toast strong { font-weight: 500; font-size: 15px; }
-.toast span { color: var(--notif-muted); }
-.toast.show { animation: drop 0.3s ease-out; }
+.toast-body span { color: var(--notif-muted); }
+.toast-x { position: relative; flex-shrink: 0; width: 32px; height: 32px; margin-top: -3px; border: 0; border-radius: 50%; background: transparent; color: var(--notif-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.toast-x::after { content: ""; position: absolute; inset: -6px; }
+.toast-x:hover { color: var(--notif-ink); background: color-mix(in srgb, var(--notif-ink) 12%, transparent); }
+.toast-x:focus-visible { outline-color: var(--notif-ink); }
+.toast.show { animation: toastUp 0.32s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.toast.out { animation: toastDown 0.22s ease-in forwards; }
+@keyframes toastUp { from { transform: translate(-50%, 28px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+@keyframes toastDown { to { transform: translate(-50%, 28px); opacity: 0; } }
 
 @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
@@ -373,6 +382,7 @@ input[type=number] { -moz-appearance: textfield; }
   .tabbar-inner { height: 70px; }
   .tab { font-size: 12px; }
   .fab { bottom: 90px; }
+  .toast { bottom: calc(158px + env(safe-area-inset-bottom, 0px)); }
   .sheet-wrap { align-items: center; padding: 24px; }
   .sheet { border-radius: 24px; max-height: 88%; padding-bottom: 26px; }
   .grabber { display: none; }
@@ -2057,9 +2067,20 @@ input[type=number] { -moz-appearance: textfield; }
   var toastT;
   function toast(title, body) {
     var el = $('#toast');
-    el.innerHTML = '<strong>' + esc(brandify(title)) + '</strong>' + (body ? '<span>' + esc(brandify(body)) + '</span>' : '');
-    el.hidden = false; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
-    clearTimeout(toastT); toastT = setTimeout(function () { el.hidden = true; }, 4200);
+    el.innerHTML = '<div class="toast-body"><strong>' + esc(brandify(title)) + '</strong>' + (body ? '<span>' + esc(brandify(body)) + '</span>' : '') + '</div>' +
+      '<button type="button" class="toast-x" data-act="toast-close" aria-label="Dismiss">' + ic('x', 16) + '</button>';
+    clearTimeout(toastT); clearTimeout(toastOutT);
+    el.hidden = false; el.classList.remove('show', 'out'); void el.offsetWidth; el.classList.add('show');
+    toastT = setTimeout(hideToast, 4500);
+  }
+  var toastOutT;
+  function hideToast() {
+    var el = $('#toast');
+    if (el.hidden) return;
+    clearTimeout(toastT);
+    el.classList.remove('show'); el.classList.add('out');
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    toastOutT = setTimeout(function () { el.hidden = true; el.classList.remove('out'); }, reduce ? 0 : 220);
   }
   function toTop() { var sc = $('#scroller'); if (sc) sc.scrollTop = 0; }
   function focusSoon(sel) { setTimeout(function () { var i = $(sel); if (i) try { i.focus(); } catch (e) { } }, 60); }
@@ -2148,6 +2169,7 @@ input[type=number] { -moz-appearance: textfield; }
       syncMeal();
     },
     cat: function (el) { S.sheet.cat = el.dataset.k; Array.prototype.forEach.call(el.parentNode.children, function (b) { b.setAttribute('aria-pressed', String(b === el)); }); syncMeal(); },
+    'toast-close': function () { hideToast(); },
     meal: function (el) { var k = el.dataset.k; S.sheet.meal = S.sheet.meal === k ? '' : k; S.sheet.mealManual = true; syncMeal(); },
     refresh: function (el) {
       if (el.classList.contains('spin')) return;
