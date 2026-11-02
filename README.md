@@ -17,6 +17,21 @@ This is a single-page web app with no server. All data stays in the browser that
 
 Pages from a private repository needs a paid GitHub plan (Pro, Team or Enterprise). On a free plan the repository must be public for Pages to work. A published Pages site is public to anyone with the link, even when the repository is private, unless you use GitHub Enterprise Cloud access control.
 
+## Tests
+
+The app has a built-in self-check covering the bank-SMS reader, the daily-budget maths, one-line entry and CSV parsing. Run it on a phone from **Settings → Run self-check**, or from a computer:
+
+```
+npm install --no-save playwright && npx playwright install chromium
+node tests/run-tests.js
+```
+
+The bank messages in the checks are examples written in common formats, not real messages. Add new formats to `selfTestSms()` in `index.html`.
+
+## Version history
+
+See `CHANGELOG.md`, or **Settings → Version history** in the app.
+
 ## Open-source libraries (loaded from cdnjs)
 
 - js-cookie 3.0.5 (MIT)

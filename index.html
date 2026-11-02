@@ -324,7 +324,11 @@ input[type=number] { -moz-appearance: textfield; }
 .fab:active { transform: scale(0.94); }
 
 .sheet-wrap { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-end; justify-content: center; background: var(--scrim); animation: fade 0.2s ease; }
-.sheet { width: 100%; max-width: 500px; max-height: 92%; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; background: var(--bg); border-radius: 24px 24px 0 0; padding-top: 10px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); padding-bottom: calc(26px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 18px; animation: up 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: var(--shadow); }
+.sheet { width: 100%; max-width: 500px; max-height: 92%; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); border-radius: 24px 24px 0 0; animation: up 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: var(--shadow); }
+/* Sheet header stays put; only the body scrolls. */
+.sheet-top { flex: none; display: flex; flex-direction: column; gap: 10px; padding-top: 10px; padding-bottom: 12px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); border-bottom: 1px solid transparent; transition: border-color 0.15s ease; }
+.sheet-top.scrolled { border-bottom-color: var(--line); }
+.sheet-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 16px; padding-top: 6px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); padding-bottom: calc(26px + env(safe-area-inset-bottom, 0px)); }
 .grabber { width: 36px; height: 4px; border-radius: 999px; background: var(--line-strong); margin: 0 auto; }
 
 .notif { display: flex; gap: 14px; padding: 16px 18px; border-radius: 20px; background: var(--notif-bg); color: var(--notif-ink); }
@@ -406,7 +410,8 @@ input[type=number] { -moz-appearance: textfield; }
   .fab { bottom: 90px; }
   .toast { bottom: calc(158px + env(safe-area-inset-bottom, 0px)); }
   .sheet-wrap { align-items: center; padding: 24px; }
-  .sheet { border-radius: 24px; max-height: 88%; padding-bottom: 26px; }
+  .sheet { border-radius: 24px; max-height: 88%; }
+  .sheet-body { padding-bottom: 26px; }
   .grabber { display: none; }
 }
 /* Desktop */
@@ -777,7 +782,12 @@ input[type=number] { -moz-appearance: textfield; }
     var m = s.match(/([a-z0-9][a-z0-9._-]{1,48})@([a-z][a-z0-9]{1,15})\b/i);
     if (m) { var parts = m[1].split(/[._-]/).filter(function (p) { return p && !PSP.test(p); }); if (parts.length) return tidyName(parts[0]); }
     var re = /\b(?:at|to|towards|trf to|transfer to|paid to|sent to|from|by|info:?)\s+([A-Za-z][A-Za-z0-9&'. -]{1,40}?)(?=\s+(?:on|via|ref|upi|txn|avl|avbl|bal|using|from|for|dated|at|with|in|thru|through)\b|[.,;:\n(]|$)/gi, x;
-    while ((x = re.exec(s))) { var nm = x[1].trim(); if (!NOT_NAME.test(nm) && !/^(a\/c|x+\d+)/i.test(nm)) return tidyName(nm); }
+    while ((x = re.exec(s))) {
+      var nm = x[1].trim();
+      /* Skip phrases about the customer's own account ("from your account XXXX5678"), not the payee. */
+      if (NOT_NAME.test(nm) || /^(a\/c|x+\d+)/i.test(nm) || /^(your|my|our|the)\b|\b(account|a\/c|acct)\b|x{2,}\d|\*{2,}\d/i.test(nm)) continue;
+      return tidyName(nm);
+    }
     m = s.match(/UPI\/(?:P2[AM]\/)?\d*\/?([A-Za-z][A-Za-z .]{1,30})/i);
     return m ? tidyName(m[1]) : '';
   }
@@ -820,6 +830,7 @@ input[type=number] { -moz-appearance: textfield; }
     var d = s.search(SMS_DEBIT), c = s.search(SMS_CREDIT);
     if (d < 0 && c < 0) return { ok: false, raw: s, why: 'Couldn’t tell whether money went out or came in.' };
     var kind = d >= 0 && (c < 0 || d < c) ? 'expense' : 'income', merchant = smsMerchant(s);
+    if (kind === 'expense' && /\batm\b/i.test(s) && /withdr/i.test(s)) merchant = 'ATM withdrawal';
     var item = { ok: true, raw: s, kind: kind, amt: amt, merchant: merchant, cat: kind === 'income' ? 'income' : guessCat(merchant, mem), ts: parseWhen(s) || Date.now(), wallet: smsWallet(s) };
     item.cur = mon.cur && mon.cur !== S.p.currency ? mon.cur : '';
     applyRule(item);
@@ -971,7 +982,7 @@ input[type=number] { -moz-appearance: textfield; }
     var mp = detectCols(res.headers), neg = mp.amount && res.rows.some(function (r) { return parseAmt(r[mp.amount]) < 0; });
     var bw = S.p.wallets.filter(function (w) { return w.type === 'bank'; })[0] || S.p.wallets[0];
     S.sheet = { type: 'csv', step: 'map', headers: res.headers, rows: res.rows, map: mp, sign: neg ? 'signed' : 'spend', wallet: bw ? bw.id : '', keepDups: false, file: sh && sh.file };
-    renderSheet(); var s = document.querySelector('.sheet'); if (s) s.scrollTop = 0;
+    renderSheet(); var s = document.querySelector('.sheet-body'); if (s) s.scrollTop = 0;
   }
   function addItems(items, src) {
     var b0 = calc(S.p), ids = [];
@@ -1003,6 +1014,179 @@ input[type=number] { -moz-appearance: textfield; }
   function undoAdd(ids, what) { return function () { removeTxns(ids); renderAll(); toast('Undone', what + ' removed.'); }; }
   function undoDelete(list) { return function () { restoreTxns(list); renderAll(); toast('Restored', plural(list.length, 'transaction') + ' back.'); }; }
 
+  /* ---------------- One-line entry: "15 shawarma lunch", "karak 3 cash", "taxi 25 yesterday" ---------------- */
+  var QUICK_CATS = [
+    ['food', /\b(food|lunch|dinner|breakfast|brunch|supper|meal|shawarma|biryani|pizza|burger|restaurant|snacks?|sandwich)\b/i],
+    ['groceries', /\b(grocer(?:y|ies)|vegetables|veggies|fruits?|milk|supermarket|hypermarket)\b/i],
+    ['coffee', /\b(coffee|karak|chai|tea|latte|cappuccino|caf[eé])\b/i],
+    ['transport', /\b(taxi|cab|uber|careem|karwa|metro|bus|fuel|petrol|diesel|parking|toll)\b/i],
+    ['shopping', /\b(shopping|clothes|shoes|amazon|noon|gift)\b/i],
+    ['fun', /\b(movie|cinema|netflix|games?|concert|outing)\b/i],
+    ['health', /\b(pharmacy|medicine|doctor|clinic|gym|dentist)\b/i],
+    ['travel', /\b(flight|hotel|trip|travel|visa)\b/i],
+    ['bills', /\b(rent|bill|electricity|internet|recharge|ooredoo|vodafone|insurance)\b/i]
+  ];
+  function parseQuick(text, mem) {
+    var s = ' ' + String(text || '').replace(/\s+/g, ' ').trim() + ' ';
+    if (!s.trim()) return null;
+    var out = { amt: 0, kind: 'expense', merchant: '', cat: '', meal: '', wallet: '', ts: null }, m, now = new Date(), day = 0, hh = null, mm = 0, explicitCat = '';
+    if (/\byesterday\b/i.test(s)) { day = -1; s = s.replace(/\byesterday\b/i, ' '); }
+    s = s.replace(/\btoday\b/i, ' ');
+    if ((m = s.match(/\b(?:at\s+)?(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i))) { hh = (+m[1] % 12) + (/pm/i.test(m[3]) ? 12 : 0); mm = m[2] ? +m[2] : 0; s = s.replace(m[0], ' '); }
+    else if ((m = s.match(/\bat\s+(\d{1,2}):(\d{2})\b/i))) { hh = +m[1] % 24; mm = +m[2]; s = s.replace(m[0], ' '); }
+    if ((m = s.match(/(\d[\d,]*(?:\.\d+)?)\s*(k)?(?![\w.])/i))) { out.amt = parseFloat(m[1].replace(/,/g, '')) * (m[2] ? 1000 : 1); s = s.replace(m[0], ' '); }
+    s = s.replace(/\b(rs\.?|inr|qar|qr|riyals?|aed|dhs?|dirhams?|usd|dollars?|rupees?|bucks)\b/gi, ' ').replace(/[₹$€£]/g, ' ');
+    if (/\b(salary|income|received|got paid|refund|cashback|bonus)\b/i.test(s)) out.kind = 'income';
+    if ((m = s.match(/\b(breakfast|brunch|lunch|dinner|supper)\b/i))) { var w = m[1].toLowerCase(); out.meal = w === 'brunch' ? 'lunch' : w === 'supper' ? 'dinner' : w; s = s.replace(m[0], ' '); }
+    var low = s.toLowerCase();
+    if (S.p) {
+      S.p.wallets.slice().sort(function (a, b) { return b.name.length - a.name.length; }).some(function (wl) {
+        var n = wl.name.toLowerCase();
+        if (n && low.indexOf(' ' + n + ' ') >= 0) { out.wallet = wl.id; s = s.replace(new RegExp('\\b' + n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i'), ' '); return true; }
+        return false;
+      });
+      if (!out.wallet && /\bcash\b/i.test(s)) { var cw = S.p.wallets.filter(function (x) { return x.type === 'cash'; })[0]; if (cw) { out.wallet = cw.id; s = s.replace(/\bcash\b/i, ' '); } }
+      if (!out.wallet && /\b(credit )?card\b/i.test(s)) { var kw = S.p.wallets.filter(function (x) { return x.type === 'card'; })[0]; if (kw) { out.wallet = kw.id; s = s.replace(/\b(credit )?card\b/i, ' '); } }
+    }
+    for (var i = 0; i < QUICK_CATS.length; i++) if (QUICK_CATS[i][1].test(s)) { explicitCat = QUICK_CATS[i][0]; break; }
+    s = s.replace(/\b(for|at|on|to|paid|spent|bought|via|from|with|my|the|a|an|and|got|salary|income|received|refund|cashback|bonus)\b/gi, ' ');
+    out.merchant = tidyName(s.replace(/[^\p{L}\p{N}&'\- ]/gu, ' ').replace(/\s+/g, ' ').trim());
+    if (out.kind === 'expense') {
+      var item = applyRule({ merchant: out.merchant, kind: 'expense', cat: '' });
+      out.merchant = item.merchant;
+      out.cat = item.cat || explicitCat || (out.merchant ? guessCat(out.merchant, mem) : '') || '';
+      if (out.cat === 'other' && out.meal) out.cat = 'food';
+      if (!out.cat) out.cat = out.meal ? 'food' : 'other';
+    } else out.cat = 'income';
+    if (day || hh !== null) { var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + day, hh === null ? now.getHours() : hh, hh === null ? now.getMinutes() : mm); out.ts = d.getTime(); }
+    if (out.cat === 'food' && !out.meal) out.meal = mealFor(out.ts || Date.now());
+    return out;
+  }
+  /* ---------------- Insights helpers: payee leaderboard and time of day ---------------- */
+  function payeeBoard(list) {
+    var g = {};
+    list.forEach(function (t) { if (!t.merchant) return; var k = t.merchant.trim().toLowerCase(); if (!g[k]) g[k] = { name: t.merchant.trim(), a: 0, n: 0, cat: t.cat }; g[k].a += t.amt; g[k].n++; });
+    return Object.keys(g).map(function (k) { return g[k]; }).sort(function (a, b) { return b.a - a.a; });
+  }
+  var TOD = [['Early morning', 4, 8, '4–8 am'], ['Morning', 8, 11, '8–11 am'], ['Midday', 11, 15, '11 am–3 pm'], ['Afternoon', 15, 18, '3–6 pm'], ['Evening', 18, 22, '6–10 pm'], ['Late night', 22, 28, '10 pm–4 am']];
+  function todSplit(list) {
+    var out = TOD.map(function (b) { return { label: b[0], range: b[3], a: 0, n: 0 }; });
+    list.forEach(function (t) { var h = new Date(t.ts).getHours(); if (h < 4) h += 24; for (var i = 0; i < TOD.length; i++) if (h >= TOD[i][1] && h < TOD[i][2]) { out[i].a += t.amt; out[i].n++; break; } });
+    return out;
+  }
+
+  /* ---------------- Built-in self-check: bank SMS reader, budget maths, one-line entry, CSV ---------------- */
+  function selfTestSms() {
+    var y = new Date(Date.now() - DAY), MN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    function p(x) { return ('0' + x).slice(-2); }
+    var yy = String(y.getFullYear()).slice(2), D = {
+      ddmmyy: p(y.getDate()) + '-' + p(y.getMonth() + 1) + '-' + yy, ddmon: p(y.getDate()) + '-' + MN[y.getMonth()] + '-' + yy,
+      DDMON4: p(y.getDate()) + '-' + MN[y.getMonth()].toUpperCase() + '-' + y.getFullYear(), slash4: p(y.getDate()) + '/' + p(y.getMonth() + 1) + '/' + y.getFullYear(),
+      slash2: p(y.getDate()) + '/' + p(y.getMonth() + 1) + '/' + yy, iso: y.getFullYear() + '-' + p(y.getMonth() + 1) + '-' + p(y.getDate())
+    };
+    return [
+      { name: 'Qatar debit card “was used”', acct: 'QAR', sms: 'Debit Card **4821 \nwas used for QAR 15.00\nat SALUTARY FOOD TRADIN\nat 07:34\n' + D.ddmon, want: { kind: 'expense', amt: 15, cur: '', merchant: 'Salutary Food Tradin', cat: 'food', wallet: 'bank', day: 'y', hm: '07:34', meal: 'breakfast' } },
+      { name: 'Qatar credit card purchase', acct: 'QAR', sms: 'Purchase of QAR 45.50 with Credit Card ending 9902 at CARREFOUR CITY CENTER on ' + D.slash4 + ' 13:22. Avl limit QAR 9,500.00', want: { kind: 'expense', amt: 45.5, merchant: 'Carrefour City Center', cat: 'groceries', wallet: 'card', day: 'y', hm: '13:22' } },
+      { name: 'Talabat at dinner time', acct: 'QAR', sms: 'Your Debit Card ending 4821 was used for QAR 32.00 at TALABAT QATAR on ' + D.ddmon + ' at 20:15', want: { kind: 'expense', amt: 32, merchant: 'Talabat Qatar', cat: 'food', meal: 'dinner', hm: '20:15' } },
+      { name: 'Salary credit in QAR', acct: 'QAR', sms: 'Dear Customer, QAR 5,000.00 has been credited to your account 4821 on ' + D.slash4 + '. Ref: SALARY OCT', want: { kind: 'income', amt: 5000, day: 'y' } },
+      { name: 'ATM cash withdrawal', acct: 'QAR', sms: 'Cash withdrawal of QAR 500.00 from ATM at QNB DOHA on ' + D.ddmmyy + ' 18:00', want: { kind: 'expense', amt: 500, merchant: 'ATM withdrawal', hm: '18:00' } },
+      { name: 'UAE POS debit, upper-case month', acct: 'AED', sms: 'AED 120.00 has been debited from your account XXXX5678 for a POS transaction at NOON.COM on ' + D.DDMON4 + '.', want: { kind: 'expense', amt: 120, merchant: 'Noon', cat: 'shopping', day: 'y' } },
+      { name: 'UPI debit to a VPA', acct: 'INR', sms: 'Rs.250.00 debited from a/c **4821 on ' + D.ddmmyy + ' to VPA swiggy@icici UPI Ref 1234', want: { kind: 'expense', amt: 250, merchant: 'Swiggy', cat: 'food', wallet: 'bank', day: 'y' } },
+      { name: 'UPI “Sent … To”', acct: 'INR', sms: 'Sent Rs.120.00 From HDFC Bank A/C x4821 To ZEPTO MARKETPLACE On ' + D.slash2 + ' Ref 530612345678', want: { kind: 'expense', amt: 120, merchant: 'Zepto Marketplace', cat: 'groceries', day: 'y' } },
+      { name: 'Card spend, limit after amount', acct: 'INR', sms: 'INR 1,499.00 spent on ICICI Bank Card XX9902 on ' + D.ddmon + ' at AMAZON PAY INDIA. Avl Lmt: INR 85,000.00', want: { kind: 'expense', amt: 1499, merchant: 'Amazon Pay India', cat: 'shopping', wallet: 'card', day: 'y' } },
+      { name: 'NEFT salary credit', acct: 'INR', sms: 'Your A/c XX4821 credited with INR 45,000.00 on ' + D.iso + ' by NEFT from ACME TECHNOLOGIES PVT LTD', want: { kind: 'income', amt: 45000, merchant: 'Acme', day: 'y' } },
+      { name: 'Refund credit', acct: 'INR', sms: 'Refund of Rs.399.00 credited to your account from MYNTRA on ' + D.slash4, want: { kind: 'income', amt: 399, merchant: 'Myntra' } },
+      { name: 'Balance mentioned first', acct: 'INR', sms: 'Avl Bal Rs 10,000.00. Rs 450.00 debited for UPI txn to blinkit@ybl', want: { kind: 'expense', amt: 450, merchant: 'Blinkit', cat: 'groceries' } },
+      { name: 'Wallet payment', acct: 'INR', sms: 'Paid Rs.80 to Chai Point from Paytm Balance. Updated Balance: Rs 220.', want: { kind: 'expense', amt: 80, merchant: 'Chai Point', cat: 'coffee' } },
+      { name: 'INR message on a QAR account', acct: 'QAR', sms: 'Rs.600.00 debited from A/c XX4821 to VPA blinkit.payu@okhdfc', want: { kind: 'expense', amt: 600, cur: 'INR', merchant: 'Blinkit' } },
+      { name: 'OTP is ignored', acct: 'INR', sms: '123456 is your OTP for txn of Rs 500 at AMAZON. Do not share.', want: { ok: false } },
+      { name: 'Failed payment is ignored', acct: 'INR', sms: 'Your transaction of Rs 300 at SWIGGY has failed.', want: { ok: false } },
+      { name: 'Future mandate is ignored', acct: 'INR', sms: 'Rs 649 will be debited on ' + D.ddmmyy + ' for NETFLIX mandate', want: { ok: false } },
+      { name: 'Collect request is ignored', acct: 'INR', sms: 'Rahul has sent you a collect request of Rs 200 on UPI', want: { ok: false } }
+    ];
+  }
+  function runSelfTest() {
+    var results = [], saved = S.p;
+    function p2(x) { return ('0' + x).slice(-2); }
+    function check(group, name, got, want) {
+      var ok = typeof want === 'number' ? (typeof got === 'number' && Math.abs(got - want) < 0.01) : String(got) === String(want);
+      results.push({ group: group, name: name, ok: ok, got: got, want: want });
+    }
+    try {
+      S.p = migrate({ currency: 'INR', income: 100000, cycleStart: 1, fixed: [{ id: 'f', label: 'Fixed', amount: 57000 }], createdAt: 0,
+        wallets: [{ id: 'wb', name: 'Bank 4821', type: 'bank', opening: 0 }, { id: 'wc', name: 'Card 9902', type: 'card', opening: 0 }, { id: 'wk', name: 'Cash', type: 'cash', opening: 0 }], txns: [], settings: {} });
+      var yd = startOfDay(new Date(Date.now() - DAY)).getTime();
+      selfTestSms().forEach(function (tc) {
+        S.p.currency = tc.acct;
+        var r = parseSms(tc.sms, {}, {}), w = tc.want, G = 'Bank SMS';
+        if (w.ok === false) { check(G, tc.name, !!(r && r.ok), false); return; }
+        check(G, tc.name + ' · read', !!(r && r.ok), true);
+        if (!r || !r.ok) return;
+        if (w.kind) check(G, tc.name + ' · in or out', r.kind, w.kind);
+        if (w.amt != null) check(G, tc.name + ' · amount', r.amt, w.amt);
+        if ('cur' in w) check(G, tc.name + ' · currency flag', r.cur || '', w.cur);
+        if (w.merchant != null) check(G, tc.name + ' · payee', (r.merchant || '').toLowerCase(), w.merchant.toLowerCase());
+        if (w.cat) check(G, tc.name + ' · category', r.cat, w.cat);
+        if (w.meal) check(G, tc.name + ' · meal', r.meal || '', w.meal);
+        if (w.wallet) check(G, tc.name + ' · wallet', (S.p.wallets.filter(function (x) { return x.id === r.wallet; })[0] || {}).type, w.wallet);
+        if (w.day === 'y') check(G, tc.name + ' · date', startOfDay(new Date(r.ts)).getTime() === yd, true);
+        if (w.hm) { var d = new Date(r.ts); check(G, tc.name + ' · time', p2(d.getHours()) + ':' + p2(d.getMinutes()), w.hm); }
+      });
+      S.p.currency = 'INR';
+      var B = 'Budget maths', nov2 = new Date(2026, 10, 2, 12, 0), cy = cycleFor(1, nov2);
+      check(B, 'November cycle has 30 days', cy.days, 30);
+      check(B, '2 November is day 2', cy.dayIndex, 2);
+      var c25 = cycleFor(25, nov2);
+      check(B, 'Cycle from the 25th starts 25 October', c25.start.getDate() + '/' + (c25.start.getMonth() + 1), '25/10');
+      check(B, 'Cycle from the 25th has 31 days', c25.days, 31);
+      check(B, 'February 2027 cycle has 28 days', cycleFor(1, new Date(2027, 1, 15)).days, 28);
+      S.p.txns = [];
+      check(B, 'Base: (100,000 − 57,000) ÷ 30', calc(S.p, nov2).base, 43000 / 30);
+      S.p.txns = [{ id: 'a', ts: new Date(2026, 10, 1, 10).getTime(), kind: 'expense', amt: 2000, cat: 'food', merchant: 'X', wallet: 'wb' },
+        { id: 'b', ts: new Date(2026, 10, 1, 11).getTime(), kind: 'expense', amt: 25000, cat: 'bills', merchant: 'Rent', wallet: 'wb' }];
+      var k1 = calc(S.p, nov2);
+      check(B, 'Yesterday’s 2,000 spread over the 29 days left', k1.todayBudget, 41000 / 29);
+      check(B, 'Bills don’t count against the daily budget', k1.before, 2000);
+      check(B, 'Tomorrow if nothing more is spent', k1.tomorrow, 41000 / 28);
+      S.p.txns.push({ id: 'c', ts: new Date(2026, 10, 2, 9).getTime(), kind: 'save', amt: 500, cat: 'savings', goal: 'g', merchant: 'Goal', wallet: '' });
+      check(B, 'Money moved to a goal uses today’s allowance', calc(S.p, nov2).left, 41000 / 29 - 500);
+      check(B, '7 am is breakfast', mealFor(new Date(2026, 10, 2, 7).getTime()), 'breakfast');
+      check(B, '1 pm is lunch', mealFor(new Date(2026, 10, 2, 13).getTime()), 'lunch');
+      check(B, '8 pm is dinner', mealFor(new Date(2026, 10, 2, 20).getTime()), 'dinner');
+      check(B, '2 am counts as dinner', mealFor(new Date(2026, 10, 2, 2).getTime()), 'dinner');
+      S.p.txns = [];
+      var Q = 'One-line entry', q;
+      q = parseQuick('15 shawarma lunch', {});
+      check(Q, '“15 shawarma lunch” · amount', q.amt, 15); check(Q, '“15 shawarma lunch” · payee', q.merchant, 'Shawarma'); check(Q, '“15 shawarma lunch” · category', q.cat, 'food'); check(Q, '“15 shawarma lunch” · meal', q.meal, 'lunch');
+      q = parseQuick('karak 3 cash', {});
+      check(Q, '“karak 3 cash” · amount', q.amt, 3); check(Q, '“karak 3 cash” · category', q.cat, 'coffee'); check(Q, '“karak 3 cash” · wallet', q.wallet, 'wk');
+      q = parseQuick('salary 12000', {});
+      check(Q, '“salary 12000” · income', q.kind, 'income'); check(Q, '“salary 12000” · amount', q.amt, 12000);
+      q = parseQuick('taxi 25 yesterday', {});
+      check(Q, '“taxi 25 yesterday” · category', q.cat, 'transport'); check(Q, '“taxi 25 yesterday” · date', startOfDay(new Date(q.ts)).getTime(), yd);
+      q = parseQuick('1.5k amazon card', {});
+      check(Q, '“1.5k amazon card” · amount', q.amt, 1500); check(Q, '“1.5k amazon card” · category', q.cat, 'shopping'); check(Q, '“1.5k amazon card” · wallet', q.wallet, 'wc');
+      q = parseQuick('QAR 40 dinner at 8pm', {});
+      check(Q, '“QAR 40 dinner at 8pm” · amount', q.amt, 40); check(Q, '“QAR 40 dinner at 8pm” · time', new Date(q.ts).getHours(), 20); check(Q, '“QAR 40 dinner at 8pm” · meal', q.meal, 'dinner');
+      var C = 'CSV';
+      check(C, '“1,23,456.00” is 123456', parseAmt('1,23,456.00'), 123456);
+      check(C, '“1.234,56” is 1234.56', parseAmt('1.234,56'), 1234.56);
+      check(C, '“(250.00)” is −250', parseAmt('(250.00)'), -250);
+      check(C, '“450 Dr” is −450', parseAmt('450 Dr'), -450);
+      var csv = parseCsv('Account statement\nName: Example\nTxn Date,Narration,Withdrawal Amt.,Deposit Amt.\n01/11/26,UPI-ZEPTO-zepto.rzp@axisbank-ref,"1,250.00",\n31/10/26,NEFT SALARY ACME,,"50,000.00"');
+      check(C, 'Finds the header row below junk lines', csv.headers[0], 'Txn Date');
+      check(C, 'Reads every data row', csv.rows.length, 2);
+      var cols = detectCols(csv.headers);
+      check(C, 'Spots the money-out column', cols.debit, 'Withdrawal Amt.');
+      check(C, 'Spots the money-in column', cols.credit, 'Deposit Amt.');
+      check(C, 'Spots the description column', cols.desc, 'Narration');
+    } catch (e) {
+      results.push({ group: 'Runner', name: 'Self-check crashed: ' + (e && e.message), ok: false, got: '', want: '' });
+    } finally { S.p = saved; }
+    var pass = results.filter(function (r) { return r.ok; }).length;
+    return { pass: pass, total: results.length, results: results };
+  }
+
   /* ---------------- Content: categories, wallets, roasts ---------------- */
   var CATS = {
     food: { short: 'Food', label: 'Food delivery & dining', color: '#C2704A' },
@@ -1019,6 +1203,12 @@ input[type=number] { -moz-appearance: textfield; }
   var INCOME_CAT = { short: 'Income', label: 'Income', color: '#3E9468' };
   /* Version history: add a new entry at the top with every release. */
   var RELEASES = [
+    { v: '1.6', date: '2 Nov 2026', notes: [
+      'One-line entry: type “15 shawarma lunch” or “karak 3 cash” and the form fills itself',
+      'Sheet headers stay fixed while the content scrolls',
+      'Insights: top payees this cycle and when in the day you spend',
+      'Built-in self-check in Settings tests the bank-SMS reader, budget maths, one-line entry and CSV (128 checks)',
+      'Fixed: SMS saying “from your account …” or “to your account …” now pick the shop as the payee'] },
     { v: '1.5', date: '2 Nov 2026', notes: [
       'Settings menu: tap your avatar to change the app name, logo, theme, data and account',
       'Version history, with a notice when a new version loads',
@@ -1645,6 +1835,22 @@ input[type=number] { -moz-appearance: textfield; }
     }
     var subs = detectSubs(S.p);
     if (subs.length) h += '<button type="button" class="alert info" data-act="go-bills"><span class="tile" style="--c:var(--accent)">' + ic('repeat', 18) + '</span><div class="grow"><strong>' + plural(subs.length, 'subscription') + ' spotted</strong><span class="hint">About ' + esc(money(subs.reduce(function (a, s) { return a + s.yearly; }, 0))) + ' a year. See which ones you still use.</span></div>' + ic('chev', 18) + '</button>';
+    var board = payeeBoard(c.cyc).slice(0, 5);
+    if (board.length) {
+      h += '<section class="card tight"><div class="row between" style="padding:16px 0 4px"><span class="label">Top payees this cycle</span><span class="hint">By amount</span></div>' +
+        board.map(function (p, i) {
+          var cat = CATS[p.cat] || CATS.other;
+          return '<div class="wk-row"><span class="when"><b>' + (i + 1) + '</b></span><div class="grow"><strong style="font-size:15px">' + esc(p.name) + '</strong><span class="hint">' + esc(cat.short) + ' · ' + plural(p.n, 'time') + ' · avg ' + esc(money(p.a / p.n)) + '</span></div><span class="amt">' + esc(money(p.a)) + '</span></div>';
+        }).join('') + '<div style="height:6px"></div></section>';
+    }
+    if (c.cyc.length) {
+      var tod = todSplit(c.cyc), tmax = Math.max.apply(null, tod.map(function (b) { return b.a; }).concat([1])), peak = tod.slice().sort(function (a, b) { return b.a - a.a; })[0];
+      h += '<section class="card"><div class="row between"><span class="label">When you spend</span><span class="hint">This cycle</span></div>' +
+        tod.map(function (b) {
+          return '<div class="stack-xs"><div class="row between"><span style="font-size:14px">' + esc(b.label) + ' <span class="hint">' + esc(b.range) + '</span></span><span class="amt" style="font-size:14px">' + esc(money(b.a)) + '</span></div><div class="cbar" style="--c:' + (b === peak ? 'var(--accent)' : 'var(--faint)') + ';margin-top:0"><span style="width:' + (b.a / tmax * 100).toFixed(1) + '%"></span></div></div>';
+        }).join('') +
+        (peak && peak.a ? '<p class="hint">Most of your spending happens ' + ({ 'Early morning': 'early in the morning', 'Morning': 'in the morning', 'Midday': 'around midday', 'Afternoon': 'in the afternoon', 'Evening': 'in the evening', 'Late night': 'late at night' }[peak.label] || 'then') + ' (' + esc(peak.range) + '): ' + Math.round(peak.a / Math.max(c.cycleSpent, 1) * 100) + '% of this cycle.</p>' : '') + '</section>';
+    }
     h += '<p class="hint pad">Plus ' + esc(money(c.fixedTotal)) + ' in fixed costs, set aside before any of this. Spends tagged Rent & bills don’t count against your daily budget.</p>';
     return h;
   }
@@ -1831,11 +2037,11 @@ input[type=number] { -moz-appearance: textfield; }
   function renderSheet() {
     var root = $('#sheet-root');
     if (!S.sheet || (!S.p && S.sheet.type !== 'brand' && S.sheet.type !== 'history')) { root.innerHTML = ''; root.removeAttribute('data-type'); return; }
-    var sh = S.sheet, inner = '', prevSheet = root.querySelector('.sheet'), prevTop = prevSheet ? prevSheet.scrollTop : 0, same = !!prevSheet && root.getAttribute('data-type') === sh.type;
+    var sh = S.sheet, inner = '', prevSheet = root.querySelector('.sheet-body'), prevTop = prevSheet ? prevSheet.scrollTop : 0, same = !!prevSheet && root.getAttribute('data-type') === sh.type;
     if (sh.type === 'brand') {
-      root.innerHTML = '<div class="sheet-wrap' + (same ? ' still' : '') + '" data-act="sheet-bg"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"><div class="grabber"></div>' + sheetBrand() + '</div></div>';
+      root.innerHTML = sheetFrame(sheetBrand(), same);
       root.setAttribute('data-type', sh.type);
-      if (same) root.querySelector('.sheet').scrollTop = prevTop;
+      if (same) root.querySelector('.sheet-body').scrollTop = prevTop;
       return;
     }
     if (sh.type === 'txn') inner = sheetTxn(sh);
@@ -1853,10 +2059,18 @@ input[type=number] { -moz-appearance: textfield; }
     else if (sh.type === 'rules') inner = sheetRules();
     else if (sh.type === 'storage') inner = sheetStorage();
     else if (sh.type === 'history') inner = sheetHistory();
-    root.innerHTML = brandify('<div class="sheet-wrap' + (same ? ' still' : '') + '" data-act="sheet-bg"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"><div class="grabber"></div>' + inner + '</div></div>', true);
+    else if (sh.type === 'selftest') inner = sheetSelfTest();
+    root.innerHTML = brandify(sheetFrame(inner, same), true);
     root.setAttribute('data-type', sh.type);
-    if (same) root.querySelector('.sheet').scrollTop = prevTop;
+    if (same) root.querySelector('.sheet-body').scrollTop = prevTop;
+    sheetShadow();
   }
+  function sheetFrame(inner, same) {
+    var parts = inner.split('<!--/head-->'), head = parts.length > 1 ? parts[0] : '', body = parts.length > 1 ? parts.slice(1).join('') : inner;
+    return '<div class="sheet-wrap' + (same ? ' still' : '') + '" data-act="sheet-bg"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">' +
+      '<div class="sheet-top"><div class="grabber"></div>' + head + '</div><div class="sheet-body">' + body + '</div></div></div>';
+  }
+  function sheetShadow() { var b = document.querySelector('.sheet-body'); if (b && b.previousElementSibling) b.previousElementSibling.classList.toggle('scrolled', b.scrollTop > 2); }
   function brandPreview(d) {
     return '<div class="row between"><div class="brand">' + wordmark(d) + '</div><span class="pillx gold">Accent</span></div>' +
       '<p class="hint">' + (d.showMascot ? esc(d.mascotName) + ' is sweating' : 'Getting close') + ' · “' + esc(d.catch) + '”</p>';
@@ -1970,7 +2184,7 @@ input[type=number] { -moz-appearance: textfield; }
   }
   function sheetHead(title) {
     var back = S.sheet && S.sheet.from === 'settings' ? '<button type="button" class="icon-btn" data-act="back-settings" aria-label="Back to settings">' + ic('back', 18) + '</button>' : '';
-    return '<div class="row between"><div class="row" style="gap:10px;min-width:0">' + back + '<h2 id="sheet-title" class="h2" style="font-size:24px">' + esc(title) + '</h2></div><button type="button" class="icon-btn" data-act="close" aria-label="Close">' + ic('x', 18) + '</button></div>';
+    return '<div class="row between"><div class="row" style="gap:10px;min-width:0">' + back + '<h2 id="sheet-title" class="h2" style="font-size:24px">' + esc(title) + '</h2></div><button type="button" class="icon-btn" data-act="close" aria-label="Close">' + ic('x', 18) + '</button></div><!--/head-->';
   }
   function setItem(act, icon, label, value) {
     return '<button type="button" class="set-item" data-act="' + act + '"><span class="tile" style="--c:var(--ink-2)">' + ic(icon, 18) + '</span><span class="grow"><span style="font-size:15px">' + label + '</span>' + (value ? '<span class="hint">' + value + '</span>' : '') + '</span>' + ic('chev', 18) + '</button>';
@@ -1997,6 +2211,7 @@ input[type=number] { -moz-appearance: textfield; }
       setItem('storage', 'database', 'Storage and backup', whereTxt + ' · ' + kb(u.raw)) + '</section>' +
       '<span class="eyebrow pad">About</span>' +
       '<section class="card tight">' + setItem('history', 'info', 'Version history', 'Version ' + esc(APP_VERSION)) +
+      setItem('selftest', 'check', 'Run self-check', 'Tests the bank-SMS reader, budget maths, one-line entry and CSV') +
       setItem('refresh', 'refresh', 'Refresh app', 'Load the latest version. Your data stays.') + '</section>' +
       (S.p.demo ? '<button type="button" class="btn ghost block" data-act="reset-demo">Reset demo data</button>' : '') +
       '<button type="button" class="btn ghost block danger-text" data-act="acct-delete">' + (S.sheet.confirmDel ? 'Tap again to delete this account forever' : 'Delete this account') + '</button>';
@@ -2021,6 +2236,17 @@ input[type=number] { -moz-appearance: textfield; }
       (S.showImport ? '<div class="field"><label for="imp">Paste a BasKar JSON export</label><textarea id="imp" class="input" rows="5" spellcheck="false"></textarea><p class="error" id="imp-err" role="alert" hidden></p><button type="button" class="btn sm" data-act="do-import">Replace this account’s data</button></div>' : '') +
       '</section>';
   }
+  function sheetSelfTest() {
+    var r = S.sheet.result || runSelfTest(), fails = r.results.filter(function (x) { return !x.ok; }), groups = {};
+    S.sheet.result = r;
+    r.results.forEach(function (x) { if (!groups[x.group]) groups[x.group] = { pass: 0, total: 0 }; groups[x.group].total++; if (x.ok) groups[x.group].pass++; });
+    return sheetHead('Self-check') +
+      '<section class="stack-xs"><span class="num xl" style="color:' + (fails.length ? 'var(--bad)' : 'var(--good)') + '">' + r.pass + ' of ' + r.total + '</span><span class="hint">' + (fails.length ? plural(fails.length, 'check') + ' failed. Send a screenshot of the list below so it can be fixed.' : 'All checks passed on this device.') + '</span></section>' +
+      '<section class="card tight">' + Object.keys(groups).map(function (g) { var x = groups[g]; return '<div class="wk-row"><div class="grow"><strong style="font-size:15px">' + esc(g) + '</strong></div><span class="pillx ' + (x.pass === x.total ? 'good' : 'bad') + '">' + x.pass + ' / ' + x.total + '</span></div>'; }).join('') + '</section>' +
+      (fails.length ? '<section class="card tight">' + fails.map(function (x) { return '<div class="wk-row"><div class="grow"><strong style="font-size:14px">' + esc(x.group + ': ' + x.name) + '</strong><span class="hint">Got ' + esc(JSON.stringify(x.got)) + ', expected ' + esc(JSON.stringify(x.want)) + '</span></div></div>'; }).join('') + '</section>' : '') +
+      '<p class="hint">The bank messages here are examples written in common formats, not real messages. Each run also checks dates against yesterday, so it stays valid over time.</p>' +
+      '<button type="button" class="btn ghost block" data-act="selftest-again">Run again</button>';
+  }
   function sheetHistory() {
     return sheetHead('Version history') +
       '<p class="hint">You’re on version ' + esc(APP_VERSION) + '.</p>' +
@@ -2037,6 +2263,7 @@ input[type=number] { -moz-appearance: textfield; }
       '<form id="txn-form" class="stack" novalidate>' +
       '<div class="seg" role="group" aria-label="Type"><button type="button" data-act="kind" data-k="expense" aria-pressed="' + (kind === 'expense') + '">Spend</button><button type="button" data-act="kind" data-k="income" aria-pressed="' + (kind === 'income') + '">Income</button></div>' +
       (t ? '' : '<button type="button" class="btn ghost sm" data-act="open-sms" style="align-self:flex-start">Paste a bank SMS instead</button>') +
+      (t ? '' : '<div class="field"><label for="t-quick">Type it in one line</label><input id="t-quick" class="input" autocomplete="off" autocapitalize="off" enterkeyhint="done" placeholder="e.g. 15 shawarma lunch · karak 3 cash"><span class="hint" id="t-quick-hint">Fills in the form below as you type. Try “taxi 25 yesterday”.</span></div>') +
       '<div class="field"><label for="t-amt">Amount</label><div class="money-input"><span class="cur">' + esc(curSymbol(S.p.currency)) + '</span><input id="t-amt" type="number" inputmode="decimal" step="any" min="0" placeholder="0" value="' + (t ? esc(t.amt) : '') + '" required></div></div>' +
       (quick.length ? '<div class="field" id="quick-field"' + (kind === 'income' ? ' hidden' : '') + '><span class="label" id="quick-lbl">Again?</span><div class="chips" role="group" aria-labelledby="quick-lbl">' +
         quick.map(function (q, i) { return '<button type="button" class="chip" data-act="quick" data-i="' + i + '" aria-pressed="false" style="--c:' + (CATS[q.cat] || CATS.other).color + '"><span class="dot"></span>' + esc(q.merchant) + ' <span class="sub">' + esc(money(q.amt, { show: true })) + '</span></button>'; }).join('') +
@@ -2142,6 +2369,23 @@ input[type=number] { -moz-appearance: textfield; }
     S.sheet = { type: 'txn', id: t ? t.id : null, kind: t ? t.kind : 'expense', cat: t && t.kind === 'expense' ? t.cat : 'food', wallet: t ? t.wallet : (S.lastWallet || (S.p.wallets[0] && S.p.wallets[0].id)), confirmDel: false, quick: t ? [] : recentPayees(S.p), meal: t ? (t.meal || mealFor(t.ts)) : mealFor(Date.now()), mealManual: !!(t && t.meal) };
     renderSheet();
     if (!t) focusSoon('#t-amt');
+  }
+  /* Fills the add form from the one-line box; fields stay editable afterwards. */
+  function applyQuick(text) {
+    var sh = S.sheet, hint = $('#t-quick-hint'), q = parseQuick(text, catMemory());
+    if (!q) { if (hint) hint.textContent = 'Fills in the form below as you type. Try “taxi 25 yesterday”.'; return; }
+    if (q.kind !== sh.kind) { var kb2 = document.querySelector('.sheet [data-act="kind"][data-k="' + q.kind + '"]'); if (kb2) ACT.kind(kb2); }
+    if (q.amt) $('#t-amt').value = q.amt;
+    $('#t-mer').value = q.merchant || '';
+    if (q.kind === 'expense' && CATS[q.cat]) {
+      sh.cat = q.cat;
+      Array.prototype.forEach.call(document.querySelectorAll('#cat-chips .chip'), function (b) { b.setAttribute('aria-pressed', String(b.dataset.k === q.cat)); });
+    }
+    if (q.wallet) { var ws = $('#t-acct'); if (ws) ws.value = q.wallet; }
+    var when = $('#t-when'); if (when) when.value = toLocalInput(q.ts || Date.now());
+    sh.meal = q.meal || ''; sh.mealManual = !!q.meal;
+    syncMeal();
+    if (hint) hint.textContent = [q.kind === 'income' ? 'Income' : 'Spend', q.amt ? money(q.amt, { show: true }) : 'no amount yet', q.merchant, q.kind === 'expense' && CATS[q.cat] ? CATS[q.cat].short : '', MEALS[sh.meal] && sh.cat === 'food' ? MEALS[sh.meal] : '', q.wallet ? walletName(q.wallet) : '', q.ts ? fmtDate(q.ts) + ' ' + fmtTime(q.ts) : ''].filter(Boolean).join(' · ');
   }
   function syncMeal() {
     var sh = S.sheet, mf = $('#meal-field'), chips = $('#meal-chips');
@@ -2341,7 +2585,7 @@ input[type=number] { -moz-appearance: textfield; }
   function openSub(sheet) {
     sheet.from = S.sheet && S.sheet.type === 'settings' ? 'settings' : '';
     S.sheet = sheet; renderSheet();
-    var s = document.querySelector('.sheet'); if (s) s.scrollTop = 0;
+    var s = document.querySelector('.sheet-body'); if (s) s.scrollTop = 0;
   }
   function toTop() { var sc = $('#scroller'); if (sc) sc.scrollTop = 0; }
   function focusSoon(sel) { setTimeout(function () { var i = $(sel); if (i) try { i.focus(); } catch (e) { } }, 60); }
@@ -2377,6 +2621,8 @@ input[type=number] { -moz-appearance: textfield; }
     rules: function () { openSub({ type: 'rules' }); },
     storage: function () { S.showJson = false; S.showImport = false; openSub({ type: 'storage' }); },
     history: function () { openSub({ type: 'history' }); },
+    selftest: function () { openSub({ type: 'selftest' }); },
+    'selftest-again': function () { S.sheet.result = null; renderSheet(); toast('Self-check finished', S.sheet.result ? S.sheet.result.pass + ' of ' + S.sheet.result.total + ' passed.' : ''); },
     'go-plan': function () { S.sheet = null; S.tab = 'plan'; S.plan = planFrom(S.p); renderAll(); toTop(); },
     'set-roast': function () { S.p.settings.roast = !S.p.settings.roast; saveProfile(); renderAll(); },
     'acct-delete': function (el) {
@@ -2401,7 +2647,7 @@ input[type=number] { -moz-appearance: textfield; }
       var mem = catMemory(), idx = dupIndex(), items = [], bad = [];
       chunks.forEach(function (ch) { var r = parseSms(ch, mem, idx); if (!r) return; if (r.ok) items.push(r); else bad.push(r); });
       S.sheet.items = items; S.sheet.bad = bad; S.sheet.step = 'review'; S.sheet.fx = Object.assign({}, S.p.fx);
-      renderSheet(); var s = document.querySelector('.sheet'); if (s) s.scrollTop = 0;
+      renderSheet(); var s = document.querySelector('.sheet-body'); if (s) s.scrollTop = 0;
     },
     'sms-back': function () { S.sheet.step = 'paste'; renderSheet(); },
     'sms-add': function () {
@@ -2585,6 +2831,7 @@ input[type=number] { -moz-appearance: textfield; }
       return;
     }
     if (el.id === 't-when' && S.sheet && S.sheet.type === 'txn') { syncMeal(); return; }
+    if (el.id === 't-quick' && S.sheet && S.sheet.type === 'txn') { if (e.type === 'input') applyQuick(el.value); return; }
     if (el.dataset && el.dataset.smscat !== undefined && S.sheet && S.sheet.items) {
       if (e.type !== 'change') return;
       var it = S.sheet.items[+el.dataset.smscat]; it.cat = el.value;
@@ -2644,6 +2891,7 @@ input[type=number] { -moz-appearance: textfield; }
     else if (id === 'brand-form') saveBrand();
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && S.sheet) closeSheet(); });
+  document.addEventListener('scroll', function (e) { if (e.target && e.target.classList && e.target.classList.contains('sheet-body')) sheetShadow(); }, true);
   try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { if (S.tab === 'insights') drawCharts(); }); } catch (e) { }
   try {
     new MutationObserver(function () {
@@ -2666,6 +2914,8 @@ input[type=number] { -moz-appearance: textfield; }
   if (sess && sess.pid && meta(sess.pid)) loadProfile(sess.pid);
   renderAll();
   try { if (sessionStorage.getItem('bk_refreshed')) { sessionStorage.removeItem('bk_refreshed'); setTimeout(function () { toast('Refreshed', 'Version ' + APP_VERSION + '. Your data is still here.'); }, 300); } } catch (e) { }
+  /* Hook for tests/run-tests.js and the Settings self-check. */
+  window.BasKarTest = { run: runSelfTest, parseSms: function (t) { return parseSms(t, {}, {}); }, parseQuick: function (t) { return parseQuick(t, {}); } };
   /* After an update, say so once and offer the version history. */
   try {
     var seenV = localStorage.getItem('bk_seen_v');

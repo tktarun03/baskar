@@ -2,6 +2,13 @@
 
 The same list is in the app under **Settings → Version history**. Newest first.
 
+## 1.6 · 2 Nov 2026
+- One-line entry: type "15 shawarma lunch" or "karak 3 cash" and the form fills itself
+- Sheet headers stay fixed while the content scrolls
+- Insights: top payees this cycle and when in the day you spend
+- Built-in self-check in Settings tests the bank-SMS reader, budget maths, one-line entry and CSV (128 checks); also runnable with `node tests/run-tests.js`
+- Fixed: SMS saying "from your account …" or "to your account …" now pick the shop as the payee
+
 ## 1.5 · 2 Nov 2026
 - Settings menu: tap your avatar to change the app name, logo, theme, data and account
 - Version history, with a notice when a new version loads
