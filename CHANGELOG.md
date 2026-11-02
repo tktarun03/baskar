@@ -2,6 +2,16 @@
 
 The same list is in the app under **Settings → Version history**. Newest first.
 
+## 2.0 · 2 Nov 2026
+- Encryption at rest: each account's data is sealed with AES-GCM using a key from its password (PBKDF2-SHA-256, 150,000 rounds, separate salt from the login hash). Data from earlier versions is sealed the first time it's unlocked. New `js/core/vault.js`.
+- The key is remembered for the open tab; "Stay unlocked on this device" (Settings → Privacy, off by default) keeps it in local storage instead
+- Offline support: `sw.js` caches every file `index.html` loads plus the CDN libraries and fonts; the page is network-first, everything else cache-first
+- Backup: "Back up now" saves a JSON file, "Restore from file" reads it back, and Today reminds you after 7 days without a backup (`js/features/backup.js`)
+- Files download normally on the website (`js/app/files.js`); inside Claude they still use the downloads capability. Fixes CSV export on GitHub Pages, which used to show text to copy.
+- iPhone Safari tip to add the app to the Home Screen
+- GitHub Actions runs the tests on every push and pull request
+- Tests check that `sw.js` VERSION matches the release; self-check adds 6 encryption checks (150 checks)
+
 ## 1.9 · 2 Nov 2026
 - The app is split into one file per feature behind a small `index.html`: `css/app.css`, `js/core`, `js/ui`, `js/app` and `js/features` (plain scripts, no build step)
 - Every CSS and JS link carries `?v=1.9`, so iPhones fetch the new files together after an update

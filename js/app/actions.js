@@ -35,6 +35,14 @@ document.addEventListener('click', function (e) {
 function onField(e) {
   var el = e.target;
   if (el.id === 'b-logo') { if (e.type === 'change') processLogo(el.files && el.files[0]); return; }
+  if (el.id === 'bk-file') {
+    if (e.type !== 'change' || !el.files || !el.files[0]) return;
+    var bf = el.files[0], br = new FileReader();
+    br.onload = function () { try { restoreFrom(String(br.result || '')); } catch (x) { toast('Couldn’t restore', 'That isn’t a BasKar backup file.'); } };
+    br.onerror = function () { toast('Couldn’t restore', 'That isn’t a BasKar backup file.'); };
+    br.readAsText(bf); el.value = '';
+    return;
+  }
   if (el.id === 'csv-file') {
     if (e.type !== 'change' || !el.files || !el.files[0]) return;
     var f = el.files[0], fr = new FileReader();

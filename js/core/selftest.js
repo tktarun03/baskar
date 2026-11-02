@@ -134,3 +134,30 @@ function runSelfTest() {
   var pass = results.filter(function (r) { return r.ok; }).length;
   return { pass: pass, total: results.length, results: results };
 }
+
+/* Encryption checks are asynchronous (Web Crypto), so they run separately and are merged in by runAllChecks(). */
+function runVaultTest() {
+  var G = 'Encryption', out = [];
+  function check(name, got, want) { out.push({ group: G, name: name, ok: String(got) === String(want), got: got, want: want }); }
+  if (!Vault.ok) { check('This browser can encrypt', false, true); return Promise.resolve(out); }
+  var sample = { currency: 'QAR', txns: [{ id: 'a', ts: 1, amt: 15, kind: 'expense', merchant: 'Secret Shawarma Place' }] };
+  return Promise.all([vaultDerive('correct horse', 'salt1'), vaultDerive('wrong horse', 'salt1'), vaultDerive('correct horse', 'salt2')]).then(function (k) {
+    check('A key is made from the password', !!(k[0] && k[0].key), true);
+    check('Different salt gives a different key', k[0].raw !== k[2].raw, true);
+    return vaultSeal(sample, k[0].key).then(function (rec) {
+      check('Sealed data hides the payee', JSON.stringify(rec).indexOf('Secret') < 0, true);
+      check('Sealed data is marked as sealed', isSealed(rec), true);
+      return vaultOpen(rec, k[0].key).then(function (back) {
+        check('The right password opens it', back.txns[0].merchant, 'Secret Shawarma Place');
+        return vaultOpen(rec, k[1].key).then(function () { check('A wrong password can’t open it', 'opened', 'refused'); }, function () { check('A wrong password can’t open it', 'refused', 'refused'); });
+      });
+    });
+  }).then(function () { return out; }, function (e) { check('Encryption runs', String(e && e.message), 'ok'); return out; });
+}
+function runAllChecks() {
+  var r = runSelfTest();
+  return runVaultTest().then(function (v) {
+    var results = r.results.concat(v);
+    return { pass: results.filter(function (x) { return x.ok; }).length, total: results.length, results: results };
+  });
+}

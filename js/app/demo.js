@@ -56,7 +56,8 @@ function createDemo() {
   var existing = S.index.profiles.filter(function (x) { return x.demo; })[0];
   if (existing) { S.auth = { mode: 'signin', pick: existing.id, err: '' }; renderAll(); focusSoon('#si-pw'); return; }
   var id = uid(), salt = uid();
-  hashPw('demo', salt).then(function (hash) {
+  Promise.all([hashPw('demo', salt), vaultDerive('demo', salt)]).then(function (res) {
+    var hash = res[0]; useKey(id, res[1]);
     S.index.profiles.push({ id: id, name: 'Demo · Aarav', email: 'demo@example.com', salt: salt, hash: hash, demo: true, createdAt: Date.now() });
     saveIndex();
     S.pid = id; S.p = demoProfile(); nfCache = {}; saveProfile(); setSession(id); S.tab = 'today'; applyTheme();

@@ -2,7 +2,7 @@
 
 A daily budget app: it turns your monthly income into one number, what you can safely spend today, and counts it down as you spend.
 
-This is a single-page web app with no server. All data stays in the browser that opens it (compressed JSON in cookies, falling back to local storage).
+This is a single-page web app with no server. All data stays in the browser that opens it, encrypted with the account password (compressed JSON in cookies, falling back to local storage). It works offline once opened, and can back up to a file.
 
 ## For developers and AI assistants
 

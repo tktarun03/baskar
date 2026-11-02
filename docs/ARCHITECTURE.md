@@ -42,6 +42,7 @@ All UI state is one object, `S`:
   templates: [{ id, merchant, amt, cat, wallet }],           // quick adds, max 8
   fx: { INR: 0.044 },                                        // remembered exchange rates for SMS in other currencies
   dismissedSubs: [], createdAt, demo,
+  lastBackup, backupSnooze,                                // timestamps for the backup reminder
   settings: { roast: true, hide: false, theme: 'system' }
 }
 ```
@@ -72,11 +73,31 @@ Overspending spreads itself over the remaining days automatically. Money moved t
 - Charts (Chart.js) are drawn only on the Insights tab by `drawCharts()` (`js/features/insights.js`), and destroyed on other tabs.
 - Icons are inline SVG from `ic(name, size)`. Back and chevron icons get the class `mir`, which mirrors them in right-to-left.
 
+## Encryption (`js/core/vault.js`)
+
+- On sign-in, after the password hash matches, `vaultDerive(password, salt)` makes an AES-GCM key with PBKDF2-SHA-256 (150,000 rounds). The salt is `"enc:" + account salt`, which differs from the login hash's salt, so the stored hash reveals nothing about the key.
+- `saveProfile()` takes a JSON snapshot, then `vaultSeal()` compresses it (lz-string bytes) and encrypts it with a random 12-byte IV. It stores `{ enc: 1, z, iv, d }` as `bk_p_<id>`. Writes are chained on `Vault.queue` so they land in order.
+- `openProfile(pid, key)` resolves `'ok'`, `'missing'` or `'locked'`. Plain data from before 2.0 is sealed the first time it's opened with a key. On boot, a pre-2.0 session is sent to the unlock screen once with a notice.
+- Where the key is kept:
+  - the raw key in `sessionStorage['bk_k_<id>']` for the open tab, so a refresh doesn't ask again
+  - with **Stay unlocked on this device** (off by default), also in `localStorage['bk_k_<id>']`
+  - signing out or deleting the account removes both
+- **Not encrypted:** the account list `bk_idx` (names, emails, password hashes and salts), brand and language settings, and backup files.
+- If Web Crypto isn't available (non-secure context), the app saves plain data as before, and Settings says so.
+
+## Offline (`sw.js`)
+
+- The service worker is registered only on the website (HTTPS or localhost, top level), never inside Claude.
+- **Install:** it fetches `index.html`, caches every file that page loads (app files with `?v=`, CDN libraries, the fonts CSS), then activates at once.
+- **Navigations** are network-first with a 4-second timeout, falling back to the cached page. Everything else (same origin, cdnjs, Google Fonts) is cache-first and added to the cache on first use.
+- `VERSION` names the cache. A new version deletes the old caches.
+- The service worker never handles account data: that lives in cookies and local storage, not in HTTP responses.
+
 ## Storage (`Store` in `js/core/storage.js`)
 
 - `Store.set(key, obj)`: `JSON.stringify` → `LZString.compressToEncodedURIComponent` → chunks of 3,600 characters → cookies `key_0…key_n` plus `key_n` (the count). The limit is 45 chunks; past that, or if cookies are refused, the value goes to local storage.
 - At the top level (GitHub Pages) cookies are first-party: `SameSite=Lax`, with the path scoped to the app folder. When embedded in an iframe they are `SameSite=None; Secure; Partitioned`.
-- Device-wide keys: `bk_idx`, `bk_sess`, `bk_brand`, `bk_lang`. Per profile: `bk_p_<id>`. Local storage only: `bk_seen_v`, and `bk_splash` (a plain copy of the brand for the launch screen, written by `applyBrand()`).
+- Device-wide keys: `bk_idx`, `bk_sess`, `bk_brand`, `bk_lang`; local storage `bk_k_<id>` (only with Stay unlocked) and `bk_a2hs_off`; session storage `bk_k_<id>`. Per profile: `bk_p_<id>`. Local storage only: `bk_seen_v`, and `bk_splash` (a plain copy of the brand for the launch screen, written by `applyBrand()`).
 
 ## Bank SMS and CSV (parsers in `js/core/parse.js`; screens in `js/features/bank-sms.js` and `csv.js`)
 

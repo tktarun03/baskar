@@ -36,7 +36,9 @@ Every CSS and JS link in `index.html` ends in `?v=<version>`. Change all of them
 sed -i 's/?v=1\.8/?v=1.9/g' index.html     # old → new
 ```
 
-Without this, iPhones can keep cached old scripts next to the new page. The tests fail if any link doesn't match `RELEASES[0].v`.
+Then set `var VERSION = '…'` at the top of `sw.js` to the same version, so the offline cache is rebuilt and old caches are deleted.
+
+Without these, iPhones can keep cached old scripts next to the new page. The tests fail if any link or `sw.js` doesn't match `RELEASES[0].v`.
 
 ## 4. Update `CHANGELOG.md`
 
@@ -80,6 +82,7 @@ Wait until the run for your commit shows `completed success`. Then open https://
 
 ## Done when
 
-- `RELEASES[0]`, every `?v=` in `index.html` and the top of `CHANGELOG.md` show the same version.
+- `RELEASES[0]`, every `?v=` in `index.html`, `VERSION` in `sw.js` and the top of `CHANGELOG.md` show the same version.
+- The **Tests** workflow on GitHub shows a green tick for your commit.
 - The tests pass.
 - The Pages run succeeded and the live site shows the version.

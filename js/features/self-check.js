@@ -4,8 +4,19 @@
 'use strict';
 
 function sheetSelfTest() {
-  var r = S.sheet.result || runSelfTest(), fails = r.results.filter(function (x) { return !x.ok; }), groups = {};
-  S.sheet.result = r;
+  var r = S.sheet.result;
+  if (!r) {
+    if (!S.sheet.running) {
+      S.sheet.running = true;
+      runAllChecks().then(function (res) {
+        if (!S.sheet || S.sheet.type !== 'selftest') return;
+        S.sheet.result = res; S.sheet.running = false; renderSheet();
+        if (S.sheet.again) toast('Self-check finished', res.pass + ' of ' + res.total + ' passed.');
+      });
+    }
+    return sheetHead('Self-check') + '<p class="hint">Running checks…</p>';
+  }
+  var fails = r.results.filter(function (x) { return !x.ok; }), groups = {};
   r.results.forEach(function (x) { if (!groups[x.group]) groups[x.group] = { pass: 0, total: 0 }; groups[x.group].total++; if (x.ok) groups[x.group].pass++; });
   return sheetHead('Self-check') +
     '<section class="stack-xs"><span class="num xl" style="color:' + (fails.length ? 'var(--bad)' : 'var(--good)') + '">' + r.pass + ' of ' + r.total + '</span><span class="hint">' + (fails.length ? plural(fails.length, 'check') + ' failed. Send a screenshot of the list below so it can be fixed.' : 'All checks passed on this device.') + '</span></section>' +
@@ -18,5 +29,5 @@ function sheetSelfTest() {
 /* Actions (data-act="…") for this feature. */
 Object.assign(ACT, {
   selftest: function () { openSub({ type: 'selftest' }); },
-  'selftest-again': function () { S.sheet.result = null; renderSheet(); toast('Self-check finished', S.sheet.result ? S.sheet.result.pass + ' of ' + S.sheet.result.total + ' passed.' : ''); }
+  'selftest-again': function () { S.sheet.result = null; S.sheet.running = false; S.sheet.again = true; renderSheet(); }
 });

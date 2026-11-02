@@ -9,7 +9,9 @@ function sheetStorage() {
     '<section class="card"><div class="row between"><span class="label">Where your data lives</span>' + storageBadge() + '</div>' +
     '<dl class="stats"><div><dt>Account JSON</dt><dd>' + kb(u.raw) + '</dd></div><div><dt>Compressed</dt><dd>' + (u.comp ? kb(u.comp) : '—') + '</dd></div><div><dt>Cookie chunks</dt><dd>' + (u.chunks || '—') + '</dd></div><div><dt>Transactions</dt><dd>' + S.p.txns.length + '</dd></div></dl>' +
     '<p class="hint">' + (u.where === 'cookie' ? 'A cookie holds about 4 KB, so BasKar compresses this account’s JSON with lz-string and splits it across ' + plural(u.chunks, 'cookie') + '. All cookies on this site use ' + kb(u.cookieBytes) + '.' : u.where === 'local' ? (Store.mode === 'cookie' ? 'This account outgrew cookie space, so its JSON now lives in local storage.' : esc(Store.note)) : esc(Store.note)) + '</p>' +
-    '<p class="hint">Safari can clear a website’s saved data after 7 days without a visit. Export a CSV now and then as a backup.</p>' +
+    '<p class="hint">Safari can clear a website’s saved data after 7 days without a visit. Keep a backup file somewhere safe.</p>' +
+    '<div class="row wrap"><button type="button" class="btn sm" data-act="backup">' + ic('database', 16) + ' Back up now</button><input type="file" id="bk-file" accept=".json,application/json" class="sr-only"><label for="bk-file" class="btn quiet sm">Restore from file</label></div>' +
+    '<p class="hint"><span>' + esc(lastBackupText()) + '</span>. <span>The backup file isn’t encrypted. Restoring replaces this account’s data.</span></p>' +
     '<div class="row wrap"><button type="button" class="btn quiet sm" data-act="export-csv">Export CSV</button><button type="button" class="btn quiet sm" data-act="toggle-json">' + (S.showJson ? 'Hide JSON' : 'View JSON') + '</button><button type="button" class="btn quiet sm" data-act="copy-json">' + ic('copy', 16) + ' Copy JSON</button><button type="button" class="btn quiet sm" data-act="toggle-import">Import JSON</button></div>' +
     (S.showJson ? '<pre class="json" id="json-pre" tabindex="0">' + esc(JSON.stringify(S.p, null, 2)) + '</pre>' : '') +
     (S.showImport ? '<div class="field"><label for="imp">Paste a BasKar JSON export</label><textarea id="imp" class="input" rows="5" spellcheck="false"></textarea><p class="error" id="imp-err" role="alert" hidden></p><button type="button" class="btn sm" data-act="do-import">Replace this account’s data</button></div>' : '') +
@@ -19,10 +21,7 @@ function sheetStorage() {
 function doImport() {
   var ta = $('#imp'), err = $('#imp-err');
   try {
-    var obj = JSON.parse(ta.value);
-    if (!obj || !Array.isArray(obj.txns) || typeof obj.currency !== 'string') throw new Error('shape');
-    S.p = migrate(obj); nfCache = {}; saveProfile(); S.plan = planFrom(S.p); S.showImport = false; applyTheme(); renderAll();
-    toast('Imported', S.p.txns.length + ' transactions loaded into this account.');
+    restoreFrom(ta.value);
   } catch (e) { err.textContent = 'That isn’t a BasKar export. It needs a currency and a txns list.'; err.hidden = false; }
 }
 

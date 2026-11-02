@@ -5,6 +5,13 @@
 
 /* Version history: add a new entry at the top with every release. */
 var RELEASES = [
+  { v: '2.0', date: '2 Nov 2026', notes: [
+    'Your data is now encrypted with your password, so other pages on this web address can’t read it',
+    'Works offline: once opened, the app loads and saves without signal',
+    'Back up to a file, restore from it, and a reminder when you haven’t backed up for a week',
+    'Export CSV now downloads a file on the website instead of showing text to copy',
+    'Option to stay unlocked on this device, and a tip to add the app to your iPhone Home Screen'
+  ] },
   { v: '1.9', date: '2 Nov 2026', notes: [
     'Faster, safer updates: the app is now split into one file per feature behind a small page',
     'After an update, your phone always loads the new files together, never a mix of old and new'

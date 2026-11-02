@@ -20,22 +20,14 @@ function buildCsv() {
 
 function exportCsv() {
   if (!S.p.txns.length) { toast('Nothing to export yet', 'Log a few spends first.'); return; }
-  var csv = buildCsv(), slug = String(BR.name || 'budget').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'budget';
-  var fn = slug + '-transactions-' + new Date().toISOString().slice(0, 10) + '.csv';
+  var csv = buildCsv(), fn = fileSlug() + '-transactions-' + new Date().toISOString().slice(0, 10) + '.csv';
   function fallback(msg) { S.sheet = { type: 'csvout', csv: csv, msg: msg }; renderSheet(); }
   toast('Preparing your CSV', plural(S.p.txns.length, 'transaction') + '.');
-  var get = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('downloads') : Promise.resolve(null);
-  Promise.resolve(get).then(function (dl) {
-    if (!dl) { fallback('Saving files isn’t available in this view, so here is the CSV to copy.'); return; }
-    return dl.save({ filename: fn, data: csv }).then(function (r) {
-      toast(r && r.status === 'delivered' ? 'CSV sent' : 'CSV saved', fn);
-    }, function (e) {
-      var code = e && e.code;
-      if (code === 'declined') return;
-      if (code === 'rate_limited') { toast('A save prompt is already open', 'Finish that one first.'); return; }
-      fallback('Saving the file didn’t work here, so here is the CSV to copy.');
-    });
-  }).catch(function () { fallback('Saving files isn’t available in this view, so here is the CSV to copy.'); });
+  saveFile(fn, csv, 'text/csv').then(function (r) {
+    if (r === 'saved' || r === 'delivered') toast(r === 'delivered' ? 'CSV sent' : 'CSV saved', fn);
+    else if (r === 'busy') toast('A save prompt is already open', 'Finish that one first.');
+    else if (r !== 'declined') fallback('Saving files isn’t available in this view, so here is the CSV to copy.');
+  });
 }
 
 function loadCsv(text) {

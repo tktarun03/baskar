@@ -39,9 +39,10 @@ function renderSignin() {
   return '<header class="row"><button type="button" class="icon-btn" data-act="auth-home" aria-label="Back">' + ic('back') + '</button></header>' +
     '<section class="stack" style="align-items:flex-start;padding-top:8px">' + avatar(m, 68) + '<div class="stack-xs"><h1 class="h2">' + esc(m.name) + '</h1><p class="hint">' + esc(m.email || '') + '</p></div></section>' +
     '<form id="signin-form" class="stack" novalidate><div class="field"><label for="si-pw">Password</label><input id="si-pw" class="input" type="password" autocomplete="current-password" required></div>' +
+    (S.auth.note ? '<p class="notice">' + esc(S.auth.note) + '</p>' : '') +
     (S.auth.err ? '<p class="error" role="alert">' + esc(S.auth.err) + '</p>' : '') +
     (m.demo ? '<p class="hint">Demo password: <strong>demo</strong></p>' : '') +
-    '<button type="submit" class="btn block">' + ic('lock', 18) + ' Unlock</button></form>' +
+    '<button type="submit" class="btn block"' + (S.auth.busy ? ' disabled' : '') + '>' + ic('lock', 18) + (S.auth.busy ? ' Unlocking…' : ' Unlock') + '</button></form>' +
     '<p class="fine">Passwords are hashed and stay on this device, so they can’t be reset. If you’ve lost it, delete this account and start again.</p>' +
     '<button type="button" class="btn ghost block danger-text" data-act="auth-del">' + (S.auth.confirmDel ? 'Tap again to delete this account’s data' : 'Delete this account') + '</button>';
 }
@@ -110,7 +111,8 @@ function createStep() {
     renderAll(); toTop(); return;
   }
   var id = uid(), salt = uid();
-  hashPw(d.pw, salt).then(function (hash) {
+  Promise.all([hashPw(d.pw, salt), vaultDerive(d.pw, salt)]).then(function (res) {
+    var hash = res[0]; useKey(id, res[1]);
     S.index.profiles.push({ id: id, name: d.name.trim(), email: d.email.trim(), salt: salt, hash: hash, createdAt: Date.now() });
     saveIndex();
     var wallets = d.wallets.filter(function (w) { return w.name.trim(); }).map(function (w) { return { id: uid(), name: w.name.trim(), type: w.type || 'bank', opening: num(w.opening) }; });
@@ -125,12 +127,17 @@ function createStep() {
 
 function signIn(pid, pw) {
   var m = meta(pid); if (!m) return;
+  S.auth.busy = true; renderAll();
   hashPw(pw, m.salt).then(function (h) {
-    if (h !== m.hash) { S.auth.err = 'That password doesn’t match this account. Try again.'; renderAll(); focusSoon('#si-pw'); return; }
-    if (!loadProfile(pid)) { S.auth.err = 'This account’s data is missing from this browser. It may have been cleared.'; renderAll(); return; }
+    if (h !== m.hash) { S.auth.busy = false; S.auth.err = 'That password doesn’t match this account. Try again.'; renderAll(); focusSoon('#si-pw'); return; }
+    return vaultDerive(pw, m.salt).then(function (kr) { return openProfile(pid, kr); }).then(function (res) {
+    S.auth.busy = false;
+    if (res === 'missing') { S.auth.err = 'This account’s data is missing from this browser. It may have been cleared.'; renderAll(); return; }
+    if (res === 'locked') { S.auth.err = 'This account’s data couldn’t be opened in this browser.'; renderAll(); return; }
     setSession(pid); S.auth = { mode: 'home' }; renderAll(); toTop();
     var c = calc(S.p);
     toast('Hi ' + firstName(m.name), c.over ? 'You’re already over today. Bold.' : 'You can spend ' + money(Math.max(c.left, 0)) + ' more today.');
+    });
   });
 }
 

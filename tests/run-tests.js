@@ -30,6 +30,9 @@ const relSrc = fs.readFileSync(path.join(ROOT, 'js/core/releases.js'), 'utf8');
 const current = (relSrc.match(/v: '([^']+)'/) || [])[1];
 const badV = refs.filter((r) => r.v !== current);
 if (badV.length) problems.push(`These files are not on ?v=${current} (the version in js/core/releases.js): ${badV.map((r) => r.file + '?v=' + r.v).join(', ')}`);
+const sw = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
+const swV = (sw.match(/var VERSION = '([^']+)'/) || [])[1];
+if (swV !== current) problems.push(`sw.js VERSION is '${swV}' but js/core/releases.js is '${current}'; bump it so old offline caches are cleared`);
 const changelog = fs.readFileSync(path.join(ROOT, 'CHANGELOG.md'), 'utf8');
 if (!changelog.includes(`## ${current} ·`)) problems.push(`CHANGELOG.md has no "## ${current} · …" entry`);
 
