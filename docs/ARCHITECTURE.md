@@ -85,6 +85,21 @@ Overspending spreads itself over the remaining days automatically. Money moved t
 - **Not encrypted:** the account list `bk_idx` (names, emails, password hashes and salts), brand and language settings, and backup files.
 - If Web Crypto isn't available (non-secure context), the app saves plain data as before, and Settings says so.
 
+## Quick unlock: Face ID and PIN
+
+**Face ID** (`js/core/passkey.js`):
+1. Settings → Privacy → *Unlock with Face ID* creates a platform passkey (`userVerification: 'required'`) with the PRF extension and a random 32-byte salt.
+2. The PRF output goes through HKDF-SHA-256 to make an AES-GCM key. That key encrypts the account's raw data key, and the result is stored in `localStorage['bk_bio_<id>'] = { cred, salt, iv, w }`.
+3. To unlock, `navigator.credentials.get` with the same salt asks for Face ID. It recovers the data key and then opens the profile through `finishUnlock()`.
+4. The password path is unchanged and always works. Turning it off deletes `bk_bio_<id>`. The passkey itself stays in the Passwords app until the person deletes it there.
+
+**PIN** (`js/features/quick-unlock.js`):
+- It exists only alongside *Stay unlocked* (the data key in `localStorage['bk_k_<id>']`).
+- The PIN hash is stored in `localStorage['bk_pin_<id>'] = { salt, hash, fails }`.
+- It is asked when the key comes from the device rather than this tab, and after 60 s with the app hidden.
+- Five wrong tries delete the PIN and the device key, so the password is needed.
+- It's a screen lock, not encryption. A 4-digit code can't protect data a page can copy.
+
 ## Offline (`sw.js`)
 
 - The service worker is registered only on the website (HTTPS or localhost, top level), never inside Claude.

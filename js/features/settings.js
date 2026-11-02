@@ -17,7 +17,9 @@ function sheetSettings() {
     '<div class="set-row setrow"><div class="grow"><span class="label" id="roast-lbl">Roast mode</span><span class="hint">Chillar comments on your spending. Off gives plain, neutral messages.</span></div><button type="button" class="switch" role="switch" aria-labelledby="roast-lbl" aria-checked="' + !!S.p.settings.roast + '" data-act="set-roast"><span></span></button></div></section>' +
     '<span class="eyebrow pad">Privacy</span>' +
     '<section class="card tight"><div class="set-row stack-xs"><span class="label">' + (Vault.key ? 'Encrypted with your password' : 'Not encrypted in this browser') + '</span><span class="hint">' + (Vault.key ? 'Saved data can only be read after unlocking. Without the password it can’t be recovered.' : 'This browser can’t encrypt here, so your data is saved as plain text.') + '</span></div>' +
-    (Vault.key ? '<div class="set-row setrow"><div class="grow"><span class="label" id="keep-lbl">Stay unlocked on this device</span><span class="hint">Opens without your password. Less private: the key is then saved in this browser.</span></div><button type="button" class="switch" role="switch" aria-labelledby="keep-lbl" aria-checked="' + vaultStaysUnlocked(S.pid) + '" data-act="keep-unlocked"><span></span></button></div>' : '') + '</section>' +
+    (Vault.key && Passkey.ok ? '<div class="set-row setrow"><div class="grow"><span class="label" id="bio-lbl"><span>Unlock with ' + esc(bioName()) + '</span></span><span class="hint">Uses a passkey on this device to open your encrypted data. Your password still works.</span></div><button type="button" class="switch" role="switch" aria-labelledby="bio-lbl" aria-checked="' + !!bioGet(S.pid) + '" data-act="bio-toggle"><span></span></button></div>' : '') +
+    (Vault.key ? '<div class="set-row setrow"><div class="grow"><span class="label" id="keep-lbl">Stay unlocked on this device</span><span class="hint">Opens without your password. Less private: the key is then saved in this browser.</span></div><button type="button" class="switch" role="switch" aria-labelledby="keep-lbl" aria-checked="' + vaultStaysUnlocked(S.pid) + '" data-act="keep-unlocked"><span></span></button></div>' : '') +
+    (Vault.key && vaultStaysUnlocked(S.pid) ? '<div class="set-row setrow"><div class="grow"><span class="label" id="pin-lbl">PIN lock</span><span class="hint">Asks for a 4-digit PIN when you open the app or come back after a minute. Stops someone using your phone; it doesn’t add encryption.</span></div><button type="button" class="switch" role="switch" aria-labelledby="pin-lbl" aria-checked="' + !!pinGet(S.pid) + '" data-act="pin-toggle"><span></span></button></div>' : '') + '</section>' +
     '<span class="eyebrow pad">Spending</span>' +
     '<section class="card tight">' + setItem('go-plan', 'sliders', 'Budget plan', esc(money(c.base)) + ' a day · income, fixed costs and limits') +
     setItem('tpl-manage', 'plus', 'Quick adds', plural(S.p.templates.length, 'saved spend')) +
@@ -53,7 +55,7 @@ Object.assign(ACT, {
   'keep-unlocked': function () {
     var on = !vaultStaysUnlocked(S.pid);
     if (on) vaultRemember(S.pid, Vault.raw, true);
-    else { vaultForget(S.pid, true); vaultRemember(S.pid, Vault.raw, false); }
+    else { vaultForget(S.pid, true); vaultRemember(S.pid, Vault.raw, false); pinClear(S.pid); }
     renderSheet();
     toast(on ? 'Stays unlocked' : 'Asks for your password', on ? 'This device opens your account without the password.' : 'You’ll unlock with your password each time you open the app.');
   },

@@ -412,3 +412,19 @@ input[type=number] { -moz-appearance: textfield; }
   .app { --colmax: 680px; }
   .col { padding-block: 40px 116px; }
 }
+
+/* Unlock: "or" divider, PIN dots and keypad */
+.or { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 13px; }
+.or::before, .or::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+.pin-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; padding-top: 6vh; text-align: center; }
+.pin-wrap.in-sheet { padding-top: 4px; }
+.pin-dots { display: flex; gap: 16px; margin: 6px 0 10px; }
+.pin-dots i { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--ink-2); }
+.pin-dots i.on { background: var(--ink); border-color: var(--ink); }
+.pin-dots.bad { animation: shake 0.35s ease; }
+.pin-dots.bad i { border-color: var(--bad); }
+.pin-pad { display: grid; grid-template-columns: repeat(3, 72px); gap: 14px 22px; justify-content: center; direction: ltr; }
+.pin-key { width: 72px; height: 72px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-family: var(--f-display); font-size: 28px; font-weight: 300; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.pin-key:active { background: var(--surface-2); }
+.pin-key.ghost { background: transparent; border-color: transparent; color: var(--ink-2); }
+@keyframes shake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }

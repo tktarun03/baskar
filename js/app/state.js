@@ -99,6 +99,6 @@ function openProfile(pid, kr) {
   }, function () { return 'locked'; });
 }
 
-function signOut(silent) { if (S.pid) vaultForget(S.pid, true); Vault.key = null; Vault.raw = ''; charts.forEach(function (c) { try { c.destroy(); } catch (e) { } }); charts = []; S.pid = null; S.p = null; S.sheet = null; S.plan = null; setSession(null); nfCache = {}; S.auth = { mode: 'home' }; applyTheme(); if (!silent) { renderAll(); toast('Signed out', 'Your data stays saved on this device.'); } }
+function signOut(silent) { if (S.pid) { vaultForget(S.pid, true); pinClear(S.pid); } S.lock = null; Vault.key = null; Vault.raw = ''; charts.forEach(function (c) { try { c.destroy(); } catch (e) { } }); charts = []; S.pid = null; S.p = null; S.sheet = null; S.plan = null; setSession(null); nfCache = {}; S.auth = { mode: 'home' }; applyTheme(); if (!silent) { renderAll(); toast('Signed out', 'Your data stays saved on this device.'); } }
 
-function deleteProfile(pid) { vaultForget(pid, true); Store.remove('bk_p_' + pid); S.index.profiles = S.index.profiles.filter(function (x) { return x.id !== pid; }); saveIndex(); }
+function deleteProfile(pid) { vaultForget(pid, true); bioClear(pid); pinClear(pid); Store.remove('bk_p_' + pid); S.index.profiles = S.index.profiles.filter(function (x) { return x.id !== pid; }); saveIndex(); }

@@ -1,6 +1,6 @@
 # BasKar roadmap
 
-Updated 2 Nov 2026, at version 2.0. Items are ordered by value to users, then by risk. Each item says why it matters and what "done" means. Change this file in the same commit that ships or reprioritizes an item.
+Updated 2 Nov 2026, at version 2.1. Items are ordered by value to users, then by risk. Each item says why it matters and what "done" means. Change this file in the same commit that ships or reprioritizes an item.
 
 **Status key:** ✅ shipped · 🔨 in progress · ⏭ next · 🧊 later · ❓ needs a decision
 
@@ -27,6 +27,7 @@ All data lives in the user's browser. That makes it private and free to run, and
 | 6 | 🔨 **CI on every push** (2.0: tests run on every push. To *block* a bad deploy, switch Settings → Pages → Source to "GitHub Actions" and add a deploy job after the tests) | Nothing stops a broken commit reaching production. | A GitHub Action runs `tests/run-tests.js` on pull requests, and `main` is protected by it. |
 
 | 6a | ✅ **Encrypt saved data** (2.0) | Every Pages site under `tktarun03.github.io` shares one origin, so any of them could read BasKar's storage. | Account data is sealed with AES-GCM using a key from the password. The account list (names, emails) is still plain. |
+| 6d | ✅ **Face ID unlock and PIN screen lock** (2.1) | Typing the password every time is friction. | Face ID unwraps the real data key (passkey PRF); PIN is a labelled screen lock on top of Stay unlocked. Needs testing on a real iPhone. |
 | 6b | ⏭ **Encrypted backup files** | The backup file is plain JSON today. | An option to protect the backup with the account password; restore asks for it. |
 | 6c | 🧊 **Own domain** | It would also isolate storage from other `github.io` pages, and looks more trustworthy. | Custom domain on Pages with HTTPS. |
 

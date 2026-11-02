@@ -22,7 +22,10 @@ var sess = Store.get('bk_sess');
 (function () {
   function done() { renderAll(); hideSplash(); }
   if (!(sess && sess.pid && meta(sess.pid))) { done(); return; }
-  var pid = sess.pid, rec = Store.get('bk_p_' + pid), raw = vaultRecall(pid);
+  var pid = sess.pid, rec = Store.get('bk_p_' + pid), raw = vaultRecall(pid), inTab = '';
+  try { inTab = sessionStorage.getItem('bk_k_' + pid) || ''; } catch (e) { }
+  /* A key remembered on the device (not just this tab) plus a PIN: show the PIN screen first. */
+  if (raw && !inTab && pinGet(pid)) { S.lock = { pid: pid, entry: '', err: '' }; done(); return; }
   (raw ? vaultImport(raw) : Promise.resolve(null)).then(function (kr) {
     if (rec && !isSealed(rec) && !kr && Vault.ok) {
       S.auth = { mode: 'signin', pick: pid, err: '', note: 'New: your data is now encrypted on this device. Enter your password once to lock it.' };
@@ -45,6 +48,9 @@ try {
     if (seenV) setTimeout(function () { toast('Updated to version ' + RELEASES[0].v, RELEASES[0].notes[0] + '.', { action: { label: 'What’s new', fn: function () { S.sheet = { type: 'history' }; renderSheet(); } } }); }, 400);
   }
 } catch (e) { }
+
+/* Face ID: find out once whether this browser can do it, then redraw if a screen offers it. */
+passkeyCheck().then(function (ok) { if (ok && (S.lock || !S.p || (S.sheet && S.sheet.type === 'settings'))) renderAll(); });
 
 /* Offline support: the service worker caches the app so it opens without signal (website only, not inside Claude). */
 try {

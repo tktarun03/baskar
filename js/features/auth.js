@@ -38,6 +38,7 @@ function renderSignin() {
   if (!m) { S.auth = { mode: 'home' }; return renderAuth(); }
   return '<header class="row"><button type="button" class="icon-btn" data-act="auth-home" aria-label="Back">' + ic('back') + '</button></header>' +
     '<section class="stack" style="align-items:flex-start;padding-top:8px">' + avatar(m, 68) + '<div class="stack-xs"><h1 class="h2">' + esc(m.name) + '</h1><p class="hint">' + esc(m.email || '') + '</p></div></section>' +
+    (Passkey.ok && bioGet(m.id) ? '<button type="button" class="btn block" data-act="bio-unlock"' + (S.auth.busy ? ' disabled' : '') + '>' + ic('face', 20) + ' <span>Unlock with ' + esc(bioName()) + '</span></button><div class="or"><span>or use your password</span></div>' : '') +
     '<form id="signin-form" class="stack" novalidate><div class="field"><label for="si-pw">Password</label><input id="si-pw" class="input" type="password" autocomplete="current-password" required></div>' +
     (S.auth.note ? '<p class="notice">' + esc(S.auth.note) + '</p>' : '') +
     (S.auth.err ? '<p class="error" role="alert">' + esc(S.auth.err) + '</p>' : '') +
@@ -130,14 +131,20 @@ function signIn(pid, pw) {
   S.auth.busy = true; renderAll();
   hashPw(pw, m.salt).then(function (h) {
     if (h !== m.hash) { S.auth.busy = false; S.auth.err = 'That password doesn’t match this account. Try again.'; renderAll(); focusSoon('#si-pw'); return; }
-    return vaultDerive(pw, m.salt).then(function (kr) { return openProfile(pid, kr); }).then(function (res) {
+    return vaultDerive(pw, m.salt).then(function (kr) { return finishUnlock(pid, kr); });
+  });
+}
+/* Shared by the password, Face ID and PIN paths once a key is in hand. */
+function finishUnlock(pid, kr) {
+  var m = meta(pid);
+  return openProfile(pid, kr).then(function (res) {
     S.auth.busy = false;
-    if (res === 'missing') { S.auth.err = 'This account’s data is missing from this browser. It may have been cleared.'; renderAll(); return; }
-    if (res === 'locked') { S.auth.err = 'This account’s data couldn’t be opened in this browser.'; renderAll(); return; }
-    setSession(pid); S.auth = { mode: 'home' }; renderAll(); toTop();
+    if (res === 'missing') { S.auth.err = 'This account’s data is missing from this browser. It may have been cleared.'; renderAll(); return res; }
+    if (res === 'locked') { S.auth.err = 'This account’s data couldn’t be opened in this browser.'; renderAll(); return res; }
+    setSession(pid); S.auth = { mode: 'home' }; S.lock = null; renderAll(); toTop();
     var c = calc(S.p);
     toast('Hi ' + firstName(m.name), c.over ? 'You’re already over today. Bold.' : 'You can spend ' + money(Math.max(c.left, 0)) + ' more today.');
-    });
+    return res;
   });
 }
 

@@ -75,6 +75,8 @@ There is **no build step and no bundler**. `index.html` loads plain `<script>` f
 | Budget maths | `js/core/budget.js` |
 | Storage, password hashing | `js/core/storage.js` |
 | Encryption of saved data | `js/core/vault.js` (used by `saveProfile` / `openProfile` in `js/app/state.js`) |
+| Face ID unlock (passkey + PRF) | `js/core/passkey.js` |
+| PIN screen lock, lock screen, Face ID buttons | `js/features/quick-unlock.js` |
 | Backup file, restore, Today reminders | `js/features/backup.js` |
 | Saving a file (download) | `js/app/files.js` |
 | Offline caching | `sw.js` |
@@ -119,7 +121,9 @@ Pushing to `main` publishes to GitHub Pages ("Deploy from a branch", root folder
 - **Cookie size.** Each profile is compressed and split into cookies of about 3.6 KB each. Large accounts overflow to local storage automatically (`Store.set`). Don't store big blobs per transaction.
 - **Safari evicts storage** after about 7 days without a visit (Home Screen apps are exempt). That's why Today shows a backup reminder and an Add to Home Screen tip.
 - **Saving is asynchronous.** With encryption on, `saveProfile()` snapshots the data and seals it in the background, in order (`Vault.queue`). Don't read `bk_p_<id>` back right after saving and expect plain JSON.
-- **Locked state.** After a cold start without a remembered key, `S.p` is null and the unlock screen shows. Code that runs at boot must not assume an open account.
+- **Locked state.** After a cold start without a remembered key, `S.p` is null and the unlock screen shows. With a PIN, `S.lock` is set and `renderAll()` shows the PIN pad instead of the app, even when `S.p` is loaded. Code that runs at boot must not assume an open account.
+- **Face ID is an extra key, never the only one.** The password must always unlock. Don't add a Face ID path that keeps the data key in plain storage; that would only be a screen, not encryption.
+- **Face ID needs real hardware to test.** Chromium's virtual authenticator (CDP `WebAuthn.addVirtualAuthenticator` with `hasPrf: true`) covers the code paths; Safari behaviour needs an iPhone.
 - **Offline cache.** The page is network-first; app files are cache-first by their `?v=` URL. Forgetting to bump `?v=` means phones keep old files.
 - **No password recovery.** Passwords are hashed locally, and the data is encrypted with them; a lost password means the data is gone. Backup files are plain JSON.
 - **Shared global scope.** Don't name a local variable after a global helper (`dots`, `money`, `esc`, `ic`, `S`…); this has caused a bug before. Don't reuse a top-level name in another file: the later file silently wins (the test catches it).

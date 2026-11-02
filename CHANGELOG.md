@@ -2,6 +2,12 @@
 
 The same list is in the app under **Settings → Version history**. Newest first.
 
+## 2.1 · 2 Nov 2026
+- Face ID / fingerprint unlock (`js/core/passkey.js`): a platform passkey with the WebAuthn PRF extension produces a secret; HKDF turns it into an AES-GCM key that wraps the account's data key, stored per device as `bk_bio_<id>`. Unlocking decrypts the data key, so it's real encryption, not a screen. Shown only where `isUserVerifyingPlatformAuthenticatorAvailable()` is true, on the website (not inside Claude). If Safari needs a second tap to hand over the PRF secret, a "Finish" action completes setup.
+- PIN screen lock (`js/features/quick-unlock.js`): only with "Stay unlocked"; asked on a cold open and after 60 s in the background; 5 wrong tries turn "Stay unlocked" off and require the password. Labelled as not adding encryption.
+- Sign-in, password, Face ID and PIN all finish through `finishUnlock()`
+- Tested end to end in Chromium with a virtual authenticator (PRF); not yet on a real iPhone
+
 ## 2.0 · 2 Nov 2026
 - Encryption at rest: each account's data is sealed with AES-GCM using a key from its password (PBKDF2-SHA-256, 150,000 rounds, separate salt from the login hash). Data from earlier versions is sealed the first time it's unlocked. New `js/core/vault.js`.
 - The key is remembered for the open tab; "Stay unlocked on this device" (Settings → Privacy, off by default) keeps it in local storage instead

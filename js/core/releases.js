@@ -5,6 +5,10 @@
 
 /* Version history: add a new entry at the top with every release. */
 var RELEASES = [
+  { v: '2.1', date: '2 Nov 2026', notes: [
+    'Unlock with Face ID: your face opens your encrypted data, and your password still works (iOS 18.4 or later, on the website)',
+    'PIN lock: with “Stay unlocked” on, a 4-digit PIN guards the app when you open it or come back after a minute'
+  ] },
   { v: '2.0', date: '2 Nov 2026', notes: [
     'Your data is now encrypted with your password, so other pages on this web address can’t read it',
     'Works offline: once opened, the app loads and saves without signal',
