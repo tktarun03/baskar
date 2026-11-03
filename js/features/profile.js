@@ -17,6 +17,7 @@ function applyAccent() {
   var st = document.getElementById('brand-css');
   if (!st) { st = document.createElement('style'); st.id = 'brand-css'; (document.head || document.documentElement).appendChild(st); }
   st.textContent = brandCss(themeAccent());
+  brandFavicon(BR, themeAccent());
 }
 
 function colourRow() {

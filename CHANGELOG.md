@@ -2,6 +2,11 @@
 
 The same list is in the app under **Settings → Version history**. Newest first.
 
+## 2.3.1 · 3 Nov 2026
+- Favicon: `favicon.svg` (filled coin, thicker strokes so it reads at 16 px) and `favicon.ico` (16/32/48), replacing the 512 px PNG
+- `brandFavicon()` swaps the tab icon for the white-label logo, or redraws the coin in the account's theme colour
+- `favicon-32.png` kept for tools that want a PNG
+
 ## 2.3 · 3 Nov 2026
 - Share (`js/features/share.js`): recap (PNG receipt drawn on a canvas + text), weekly review, goal, payment, this cycle, backup and CSV files, app invite
 - Uses `navigator.share` (files when `navigator.canShare` allows); otherwise copies to the clipboard, otherwise a sheet with the text to copy. Inside Claude the share sheet isn't available, so it copies.

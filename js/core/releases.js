@@ -5,6 +5,9 @@
 
 /* Version history: add a new entry at the top with every release. */
 var RELEASES = [
+  { v: '2.3.1', date: '3 Nov 2026', notes: [
+    'New browser-tab icon: the coin in your theme colour, or your own logo if you set one'
+  ] },
   { v: '2.3', date: '3 Nov 2026', notes: [
     'Share from the app: tonight’s recap as a receipt image, your week, a goal, a payment, this cycle’s spending',
     'Share a backup or CSV straight to Files, WhatsApp or Mail',

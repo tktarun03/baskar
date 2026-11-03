@@ -31,7 +31,7 @@ BasKar is a daily-budget web app. It takes monthly take-home pay, subtracts fixe
 | `ROADMAP.md` | What's planned and why. |
 | `docs/ARCHITECTURE.md` | How the app works inside. |
 | `.claude/skills/*/SKILL.md` | Step-by-step playbooks (below). Plain Markdown, so any agent can follow them. |
-| `manifest.webmanifest`, `*.png`, `.nojekyll` | Home Screen icon, PWA manifest, and "serve files as-is" for GitHub Pages. |
+| `manifest.webmanifest`, `*.png`, `favicon.*`, `.nojekyll` | Home Screen icon, browser-tab icon (`favicon.svg`/`.ico`; recoloured or replaced by the brand logo at runtime in `js/ui/brand.js`), PWA manifest, and "serve files as-is" for GitHub Pages. |
 
 ## Playbooks (skills)
 

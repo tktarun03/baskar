@@ -39,12 +39,25 @@ function brandCss(a) {
     '@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){' + dark + '}}:root[data-theme="dark"]{' + dark + '}';
 }
 
+/* Browser-tab icon: the white-label logo if there is one, else the coin in the current accent colour. */
+function brandFavicon(b, acc) {
+  var svgL = document.getElementById('fav-svg'), icoL = document.getElementById('fav-ico');
+  if (!svgL) return;
+  b = b || BR;
+  if (b.logo) { svgL.href = b.logo; svgL.removeAttribute('type'); if (icoL) icoL.href = b.logo; return; }
+  if (icoL) icoL.href = 'favicon.ico';
+  svgL.type = 'image/svg+xml';
+  if (!HEX_RE.test(acc || '') || acc.toLowerCase() === '#876628') { svgL.href = 'favicon.svg'; return; }
+  svgL.href = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="' + acc + '"/><circle cx="50" cy="50" r="37" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="3 6" stroke-linecap="round" opacity=".45"/><g fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M30 45q6-8 12 0M58 45q6-8 12 0"/><path d="M33 60q17 15 34 0"/></g></svg>');
+}
+
 function applyBrand(b) {
   b = b || BR;
   var st = document.getElementById('brand-css');
   if (!st) { st = document.createElement('style'); st.id = 'brand-css'; (document.head || document.documentElement).appendChild(st); }
   var acc = S.p && S.p.settings && HEX_RE.test(S.p.settings.accent || '') ? S.p.settings.accent : b.accent;
   st.textContent = brandCss(HEX_RE.test(acc || '') ? acc : '');
+  brandFavicon(b, acc);
   try { document.title = b.name; } catch (e) { }
   try { localStorage.setItem('bk_splash', JSON.stringify({ name: b.name, logo: b.logo || '', accent: b.accent || '', mascot: !!b.showMascot })); } catch (e) { }
   if (S.tab === 'insights' && S.p) setTimeout(drawCharts, 0);
