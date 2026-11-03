@@ -445,3 +445,12 @@ button, a, input, select, textarea, label { touch-action: manipulation; }
 
 /* Share */
 .grow-btn { flex: 1; min-width: 0; }
+
+/* Rating stars and QR code */
+.stars { display: flex; gap: 6px; direction: ltr; }
+.star { width: 48px; height: 48px; border: 0; background: none; font-size: 34px; line-height: 1; color: var(--line-strong); cursor: pointer; padding: 0; }
+.star.on { color: var(--accent); }
+.stars.big { font-size: 40px; color: var(--accent); letter-spacing: 4px; }
+.qr-box { width: min(280px, 80vw); aspect-ratio: 1; padding: 14px; border-radius: 18px; background: #fff; display: flex; align-items: center; justify-content: center; }
+.qr-box svg { width: 100%; height: 100%; }
+textarea.input.prose { font-family: var(--f-body); }

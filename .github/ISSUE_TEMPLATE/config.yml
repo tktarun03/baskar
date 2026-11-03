@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Open BasKar
+    url: https://tktarun03.github.io/baskar/
+    about: The app itself. Settings → Rate and send feedback opens this form with your rating filled in.

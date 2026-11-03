@@ -59,6 +59,9 @@ function renderSheet() {
   else if (sh.type === 'profile') inner = sheetProfile(sh);
   else if (sh.type === 'share-out') inner = sheetShareOut(sh);
   else if (sh.type === 'receipt') inner = sheetReceipt(sh);
+  else if (sh.type === 'feedback') inner = sheetFeedback(sh);
+  else if (sh.type === 'feedback-thanks') inner = sheetFeedbackThanks(sh);
+  else if (sh.type === 'share-qr') inner = sheetQr(sh);
   root.innerHTML = brandify(sheetFrame(inner, same), true);
   root.setAttribute('data-type', sh.type);
   if (same) root.querySelector('.sheet-body').scrollTop = prevTop;

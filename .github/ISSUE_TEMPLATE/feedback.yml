@@ -1,0 +1,33 @@
+# Opened from the app: Settings → Rate and send feedback (js/features/feedback.js pre-fills these fields by id).
+name: Rate and send feedback
+description: Tell us how BasKar is working for you. Posts here are public, so leave out names and amounts.
+title: "Feedback: "
+labels: ["feedback"]
+body:
+  - type: dropdown
+    id: rating
+    attributes:
+      label: Your rating
+      options:
+        - 5 – Love it
+        - 4 – Really good
+        - 3 – It’s okay
+        - 2 – Needs work
+        - 1 – Not for me
+    validations:
+      required: true
+  - type: textarea
+    id: liked
+    attributes:
+      label: What do you like?
+      placeholder: e.g. the daily number, bank SMS, the nightly recap
+  - type: textarea
+    id: improve
+    attributes:
+      label: What would make it better?
+      placeholder: e.g. a feature you miss, something confusing, a bank whose SMS isn't read
+  - type: input
+    id: details
+    attributes:
+      label: App version and device
+      description: Filled in by the app if you allowed it. Never includes your money or names.

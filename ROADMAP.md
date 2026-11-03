@@ -1,6 +1,6 @@
 # BasKar roadmap
 
-Updated 3 Nov 2026, at version 2.4. Items are ordered by value to users, then by risk. Each item says why it matters and what "done" means. Change this file in the same commit that ships or reprioritizes an item.
+Updated 3 Nov 2026, at version 2.5. Items are ordered by value to users, then by risk. Each item says why it matters and what "done" means. Change this file in the same commit that ships or reprioritizes an item.
 
 **Status key:** ✅ shipped · 🔨 in progress · ⏭ next · 🧊 later · ❓ needs a decision
 
@@ -23,6 +23,7 @@ All data lives in the user's browser. That makes it private and free to run, and
 | 2 | ✅ **Offline support (service worker)** (2.0) | It fails offline today, and iOS Home Screen users expect an app to open without signal. | The app opens and logs spends in airplane mode. The CDN libraries and fonts are cached. An update prompt appears when a new version is deployed. |
 | 3 | ✅ **Backup you can't forget** (2.0: plain JSON file, encrypted backups still to do) | Safari can delete site data after about 7 days without a visit. | A one-tap backup file (`.baskar.json`, optional password encryption). A reminder appears when the last backup is more than 7 days old. Restore is tested. |
 | 4 | ⏭ **Native review of Arabic and Tamil** | The 1.7 translations were machine-written. | A fluent speaker for each language has reviewed every row, and plural forms are fixed (Arabic needs 1, 2, 3–10 and 11+ forms). |
+| 4a | ✅ **Feedback loop** (2.5) | Item 5 of the plan: real users before more features. | In-app rating and feedback go to GitHub issues (`feedback` label), plus a QR invite. Next: count ratings with a small GitHub Action, and act on the first ten notes. |
 | 5 | ⏭ **Arabic-language bank SMS** | Gulf banks often send Arabic texts. | QNB, Doha Bank, CBQ and Emirates NBD Arabic messages are read, Arabic-Indic digits ٠–٩ are handled, and there are self-check cases for each. |
 | 6 | 🔨 **CI on every push** (2.0: tests run on every push. To *block* a bad deploy, switch Settings → Pages → Source to "GitHub Actions" and add a deploy job after the tests) | Nothing stops a broken commit reaching production. | A GitHub Action runs `tests/run-tests.js` on pull requests, and `main` is protected by it. |
 

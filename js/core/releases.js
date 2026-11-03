@@ -5,6 +5,12 @@
 
 /* Version history: add a new entry at the top with every release. */
 var RELEASES = [
+  { v: '2.5', date: '3 Nov 2026', notes: [
+    'Rate the app and send feedback from Settings → Spread the word; after a week of use, Today asks once how it’s going',
+    'Feedback opens a ready-filled GitHub page, or you can send it privately through any app',
+    'Show a QR code so a friend next to you can open the app',
+    'Invites now always include the app link'
+  ] },
   { v: '2.4', date: '3 Nov 2026', notes: [
     'Scan a receipt: photograph a paper bill (several photos for a long one) and the app reads the store, date, total and items',
     'Reading happens on your phone and the photos are discarded straight away; only the details are saved',

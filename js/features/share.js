@@ -83,7 +83,7 @@ function cycleShareText() {
   keys.forEach(function (k) { lines.push('• ' + T((CATS[k] || CATS.other).label) + ': ' + money(tot[k].a) + ' (' + Math.round(tot[k].a / Math.max(c.cycleSpent, 1) * 100) + '%)'); });
   return lines.join('\n') + shareFooter();
 }
-function inviteText() { return T('I’m budgeting with BasKar. It tells me what I can safely spend today, and my data stays on my phone.') + (appLink() ? '\n' + appLink() : ''); }
+function inviteText() { return T('I’m budgeting with BasKar. It tells me what I can safely spend today, and my data stays on my phone.') + '\n' + siteLink(); }
 
 /* ---- Tonight's recap as a receipt image (PNG) ---- */
 function recapImage() {

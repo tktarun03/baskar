@@ -2,6 +2,16 @@
 
 The same list is in the app under **Settings → Version history**. Newest first.
 
+## 2.5 · 3 Nov 2026
+- Ratings and feedback (`js/features/feedback.js`): 1–5 stars plus "What do you like?" and "What would make it better?"
+  - **Post on GitHub** opens `issues/new?template=feedback.yml` with the fields pre-filled by id (rating, liked, improve, details). The person submits it on GitHub, where it's public and needs an account.
+  - **Send it privately** uses the share sheet.
+  - The app sends nothing itself. Version, device and language are included only if ticked, and never amounts or names.
+- Today shows a one-time rating card after 7 days and 10 spends. It's not shown on the demo, and won't ask again for 45 days after "Not now".
+- Settings → Spread the word: Share BasKar, Show QR code (`qrcode-generator@1.4.4` from jsDelivr, loaded on demand), Rate and send feedback, Star on GitHub
+- GitHub: issue forms `.github/ISSUE_TEMPLATE/feedback.yml` (label `feedback`) and `bug.yml`, plus `config.yml`
+- Invites use the public site link even inside the Claude preview (`APP_SITE`)
+
 ## 2.4 · 3 Nov 2026
 - Receipt scanning (`js/features/scan-receipt.js`): take or choose up to 6 photos, OCR on the device with Tesseract.js 5.1.1 (WASM, English), check the result, add as a spend
 - Photos are read from memory (downscaled grey canvas, max 2000 px) and dropped as soon as the text is out; they're never stored

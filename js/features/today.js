@@ -37,7 +37,7 @@ function renderToday(c) {
     h += '<button type="button" class="alert ' + (e0.overdue ? '' : 'info') + '" data-act="go-bills" style="cursor:pointer"><span class="tile" style="--c:var(--ink-2)">' + ic('calendar', 18) + '</span><div class="grow"><strong>' + esc(e0.name) + ' · ' + esc(money(e0.amt)) + '</strong><span class="hint">' + dots([e0.overdue ? 'Overdue by ' + plural(-dd, 'day') : 'Due ' + relDays(dd).toLowerCase(), soon.length > 1 ? plural(soon.length - 1, 'more bill') + ' this week' : '']) + '</span></div>' + ic('chev', 18) + '</button>';
   }
 
-  h += renderReminders();
+  h += renderReminders() + rateCard();
   h += '<div class="duo"><div class="card mini"><span class="eyebrow">Tomorrow</span><span class="num md">' + (c.tomorrow === null ? 'New cycle' : esc(money(c.tomorrow))) + '</span><span class="hint">' + (c.tomorrow === null ? 'Your cycle resets tomorrow.' : 'If you stop spending now.') + '</span></div>' +
     '<div class="card mini"><span class="eyebrow">Left this cycle</span><span class="num md">' + esc(money(Math.max(c.disc - c.cycleUsed, 0))) + '</span><span class="hint">' + plural(c.cy.daysLeft, 'day') + ' including today</span></div></div>';
 

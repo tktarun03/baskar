@@ -35,8 +35,12 @@ function sheetSettings() {
     '<span class="eyebrow pad">About</span>' +
     '<section class="card tight">' + setItem('history', 'info', 'Version history', 'Version ' + esc(APP_VERSION)) +
     setItem('selftest', 'check', 'Run self-check', 'Tests the bank-SMS reader, budget maths, one-line entry and CSV') +
-    setItem('refresh', 'refresh', 'Refresh app', 'Load the latest version. Your data stays.') +
-    (appLink() ? setItem('share-app', 'share', 'Share BasKar', 'Send the link to a friend') : '') + '</section>' +
+    setItem('refresh', 'refresh', 'Refresh app', 'Load the latest version. Your data stays.') + '</section>' +
+    '<span class="eyebrow pad">Spread the word</span>' +
+    '<section class="card tight">' + setItem('share-app', 'share', 'Share BasKar', 'Send the link to a friend') +
+    setItem('share-qr', 'qr', 'Show QR code', 'For a friend standing next to you') +
+    setItem('feedback', 'star', 'Rate and send feedback', S.p.rated ? stars(S.p.rated) : 'Tell us what to improve') +
+    setItem('star-github', 'github', 'Star on GitHub', 'See what’s planned and follow along') + '</section>' +
     (S.p.demo ? '<button type="button" class="btn ghost block" data-act="reset-demo">Reset demo data</button>' : '') +
     '<button type="button" class="btn ghost block danger-text" data-act="acct-delete">' + (S.sheet.confirmDel ? 'Tap again to delete this account forever' : 'Delete this account') + '</button>';
 }

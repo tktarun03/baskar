@@ -1,0 +1,22 @@
+name: Something isn't working
+description: A bug, a wrong number, or a bank SMS or receipt that's read wrongly. Posts are public, so mask card numbers and amounts you don't want shown.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what you saw instead.
+    validations:
+      required: true
+  - type: textarea
+    id: sample
+    attributes:
+      label: Bank SMS or receipt text (optional)
+      description: Paste it with card digits and names replaced, e.g. 4821 and "Shop".
+      render: text
+  - type: input
+    id: details
+    attributes:
+      label: App version and device
+      description: Settings → Version history shows the version.

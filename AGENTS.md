@@ -80,6 +80,7 @@ There is **no build step and no bundler**. `index.html` loads plain `<script>` f
 | Edit profile (photo, name, email), change password, theme colour | `js/features/profile.js` |
 | Share buttons (recap image, week, goal, payment, cycle, files, invite) | `js/features/share.js` |
 | Scan a paper receipt (OCR, review, add) | `js/features/scan-receipt.js` (parser in `js/core/receipt.js`) |
+| Rating, feedback (GitHub issue form), QR invite | `js/features/feedback.js`; the forms are in `.github/ISSUE_TEMPLATE/`. For a white-label copy, change `APP_SITE` and `APP_REPO`. |
 | Backup file, restore, Today reminders | `js/features/backup.js` |
 | Saving a file (download) | `js/app/files.js` |
 | Offline caching | `sw.js` |
@@ -98,7 +99,7 @@ Every file starts with a one-line description. To find where some text or functi
 1. **No build, no framework.** Edit the files directly. Don't add a bundler, framework, `import`/`export`, or npm dependencies to the app.
 2. **New file?** Add its `<script src="js/…?v=<current version>">` tag to `index.html` in the right place: features A–Z, before `boot.js`. Start it with the standard header comment and `'use strict';`. Keep top-level names unique.
 3. **Escape everything.** HTML is built as strings. Wrap any user or bank text in `esc()`. Never put raw input into `innerHTML`.
-4. **Data stays local.** Never add network calls that send user data anywhere. The only network requests are the pinned CDN libraries (cdnjs), Google Fonts, and the OCR files from jsDelivr (`tesseract.js@5.1.1`, loaded only when someone scans a receipt). Receipt photos are read in memory and never stored or uploaded.
+4. **Data stays local.** Never add network calls that send user data anywhere. The only network requests are the pinned CDN libraries (cdnjs), Google Fonts, and from jsDelivr the OCR files (`tesseract.js@5.1.1`, loaded only when someone scans a receipt) and `qrcode-generator@1.4.4` (only when someone opens the QR code). Feedback never leaves the app by itself: it opens a pre-filled GitHub page or the share sheet, and the person sends it. Receipt photos are read in memory and never stored or uploaded.
 5. **Don't break saved data.** Profiles live in users' cookies, sealed with their password. New fields need a default in `migrate()`. Never rename or remove an existing field without a migration. Always save through `saveProfile()` (it encrypts); never write `bk_p_<id>` directly, and never store or log the key anywhere new.
 6. **Write UI text in English, then translate it.** Add a row to `BASKAR_I18N_ROWS` for every new string. Keep user data (names, payees, amounts) out of translatable sentences: put it in its own element (see `dots()`).
 7. **Every release updates the history.** Add an entry to `RELEASES` (`js/core/releases.js`) and to `CHANGELOG.md`, bump every `?v=` in `index.html`, and bump `VERSION` in `sw.js`. The release playbook covers it all.

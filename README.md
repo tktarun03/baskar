@@ -4,6 +4,10 @@ A daily budget app: it turns your monthly income into one number, what you can s
 
 This is a single-page web app with no server. All data stays in the browser that opens it, encrypted with the account password (compressed JSON in cookies, falling back to local storage). It works offline once opened, and can back up to a file.
 
+## Feedback
+
+In the app, go to **Settings → Spread the word → Rate and send feedback**. It opens a pre-filled [feedback issue](https://github.com/tktarun03/baskar/issues/new?template=feedback.yml). Bugs, and bank SMS or receipts that are read wrongly, use the [bug form](https://github.com/tktarun03/baskar/issues/new?template=bug.yml). All feedback is listed under the [`feedback` label](https://github.com/tktarun03/baskar/issues?q=label%3Afeedback).
+
 ## For developers and AI assistants
 
 - `AGENTS.md`: how the code is organised, the rules, and how to test and ship. Start here.
