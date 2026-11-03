@@ -55,7 +55,7 @@ function sheetWeek() {
     (w.ptot && w.cats.length ? '<section class="card tight"><div style="padding:14px 0 4px"><span class="label">Biggest changes</span></div>' + w.cats.slice(0, 3).map(function (x) { return '<div class="wk-row"><span class="tile" style="--c:' + CATS[x.k].color + '">' + ic(x.k, 18) + '</span><div class="grow"><strong style="font-size:15px">' + esc(CATS[x.k].label) + '</strong><span class="hint">' + esc(money(x.b)) + ' → ' + esc(money(x.a)) + '</span></div><span class="delta ' + (x.d > 0 ? 'up' : 'down') + '">' + (x.d > 0 ? '+' : '−') + esc(money(Math.abs(x.d))) + '</span></div>'; }).join('') + '<div style="height:6px"></div></section>' : '') +
     (meals ? '<section class="card mini"><span class="eyebrow">Food by meal</span>' + meals + '</section>' : '') +
     '<section class="leak"><span class="eyebrow">One thing to try next week</span><p style="color:var(--ink-2)">' + weekTip(w) + '</p></section>' +
-    '<button type="button" class="btn quiet block" data-act="close">Done</button>';
+    '<div class="duo">' + shareButton('share-week', 'Share') + '<button type="button" class="btn quiet" data-act="close">Done</button></div>';
 }
 
 /* Actions (data-act="…") for this feature. */

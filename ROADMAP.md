@@ -1,6 +1,6 @@
 # BasKar roadmap
 
-Updated 2 Nov 2026, at version 2.2. Items are ordered by value to users, then by risk. Each item says why it matters and what "done" means. Change this file in the same commit that ships or reprioritizes an item.
+Updated 3 Nov 2026, at version 2.3. Items are ordered by value to users, then by risk. Each item says why it matters and what "done" means. Change this file in the same commit that ships or reprioritizes an item.
 
 **Status key:** ✅ shipped · 🔨 in progress · ⏭ next · 🧊 later · ❓ needs a decision
 

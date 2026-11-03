@@ -35,7 +35,7 @@ function sheetRecap() {
     '<span class="stamp" style="--sc:' + sc + '">' + stamp + '</span></div><div class="receipt-edge"></div></div>' +
     move +
     '<section class="card"><span class="eyebrow">Tomorrow’s allowance</span><span class="num xl" style="color:' + (c.tomorrow !== null && c.tomorrow < c.base - 0.5 ? 'var(--bad)' : 'var(--ink)') + '">' + (c.tomorrow === null ? 'New cycle' : esc(money(c.tomorrow))) + '</span><p class="hint">' + esc(tomorrowNote) + '</p></section>' +
-    '<button type="button" class="btn quiet block" data-act="close">Done</button>';
+    '<div class="duo">' + shareButton('share-recap', 'Share') + '<button type="button" class="btn quiet" data-act="close">Done</button></div>';
 }
 
 /* Actions (data-act="…") for this feature. */

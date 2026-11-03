@@ -57,6 +57,7 @@ function renderSheet() {
   else if (sh.type === 'selftest') inner = sheetSelfTest();
   else if (sh.type === 'pin-setup') inner = sheetPinSetup(sh);
   else if (sh.type === 'profile') inner = sheetProfile(sh);
+  else if (sh.type === 'share-out') inner = sheetShareOut(sh);
   root.innerHTML = brandify(sheetFrame(inner, same), true);
   root.setAttribute('data-type', sh.type);
   if (same) root.querySelector('.sheet-body').scrollTop = prevTop;

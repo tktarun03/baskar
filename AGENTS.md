@@ -78,6 +78,7 @@ There is **no build step and no bundler**. `index.html` loads plain `<script>` f
 | Face ID unlock (passkey + PRF) | `js/core/passkey.js` |
 | PIN screen lock, lock screen, Face ID buttons | `js/features/quick-unlock.js` |
 | Edit profile (photo, name, email), change password, theme colour | `js/features/profile.js` |
+| Share buttons (recap image, week, goal, payment, cycle, files, invite) | `js/features/share.js` |
 | Backup file, restore, Today reminders | `js/features/backup.js` |
 | Saving a file (download) | `js/app/files.js` |
 | Offline caching | `sw.js` |

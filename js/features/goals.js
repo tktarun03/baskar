@@ -14,7 +14,7 @@ function renderGoals(c) {
     else if (rate > 0) eta = 'At this pace you’ll get there by ' + fmtDate(Date.now() + remain / rate * DAY, { month: 'short', year: 'numeric' }) + '.';
     else eta = 'Move today’s unspent money here from the nightly recap.';
     return '<section class="card"><div class="goal">' + ring(pct, 64) + '<div class="grow"><span class="h3">' + esc(g.name) + '</span><span class="hint">' + esc(money(saved)) + ' of ' + esc(money(target)) + '</span><span class="hint">' + esc(eta) + '</span></div></div>' +
-      '<div class="duo"><button type="button" class="btn sm" data-act="add-contrib" data-id="' + esc(g.id) + '">Add money</button><button type="button" class="btn ghost sm" data-act="edit-goal" data-id="' + esc(g.id) + '">Edit</button></div></section>';
+      '<div class="row"><button type="button" class="btn sm grow-btn" data-act="add-contrib" data-id="' + esc(g.id) + '">Add money</button><button type="button" class="btn ghost sm grow-btn" data-act="edit-goal" data-id="' + esc(g.id) + '">Edit</button><button type="button" class="icon-btn" data-act="share-goal" data-id="' + esc(g.id) + '" aria-label="Share goal">' + ic('share', 18) + '</button></div></section>';
   }).join('');
   h += '<button type="button" class="btn ghost block" data-act="add-goal">' + ic('plus', 18) + ' New goal</button>';
   h += '<p class="hint pad">Money you move to a goal comes out of your daily allowance, so it can’t be spent twice. Today you have ' + esc(money(Math.max(c.left, 0))) + ' left to give.</p>';

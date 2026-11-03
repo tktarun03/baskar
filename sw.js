@@ -4,7 +4,7 @@
    - Everything else is cache-first; versioned URLs (?v=…) mean a release never mixes old and new files.
    VERSION must match the top entry of js/core/releases.js (tests/run-tests.js checks); bumping it clears old caches.
    It never sees or stores account data: that lives in cookies and local storage, not in HTTP responses. */
-var VERSION = '2.2';
+var VERSION = '2.3';
 var CACHE = 'baskar-' + VERSION;
 var PAGE_TIMEOUT = 4000;
 

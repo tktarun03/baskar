@@ -2,6 +2,13 @@
 
 The same list is in the app under **Settings → Version history**. Newest first.
 
+## 2.3 · 3 Nov 2026
+- Share (`js/features/share.js`): recap (PNG receipt drawn on a canvas + text), weekly review, goal, payment, this cycle, backup and CSV files, app invite
+- Uses `navigator.share` (files when `navigator.canShare` allows); otherwise copies to the clipboard, otherwise a sheet with the text to copy. Inside Claude the share sheet isn't available, so it copies.
+- Everything before `navigator.share()` is synchronous (image via `toDataURL`), so iPhone keeps the tap's permission
+- Shared text goes through the translation table (`T()`), so it's in the chosen language; `money()` keeps "Hide amounts" in effect
+- New `share` icon
+
 ## 2.2 · 2 Nov 2026
 - Edit profile (`js/features/profile.js`): photo (centre-cropped to 160 px JPEG, ~3–8 KB), name, email. Stored in `bk_idx` with the account list, so it shows before unlocking and is not encrypted.
 - Change password: checks the current one, derives a new key, re-seals the data on `Vault.queue` before updating the stored hash, so a failure can't lock anyone out. Face ID is turned off (it wrapped the old key) and "Stay unlocked" is moved to the new key.

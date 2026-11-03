@@ -51,6 +51,7 @@ function renderInsights(c) {
       (peak && peak.a ? '<p class="hint">Most of your spending happens ' + ({ 'Early morning': 'early in the morning', 'Morning': 'in the morning', 'Midday': 'around midday', 'Afternoon': 'in the afternoon', 'Evening': 'in the evening', 'Late night': 'late at night' }[peak.label] || 'then') + ' (' + esc(peak.range) + '): ' + Math.round(peak.a / Math.max(c.cycleSpent, 1) * 100) + '% of this cycle.</p>' : '') + '</section>';
   }
   h += '<p class="hint pad">Plus ' + esc(money(c.fixedTotal)) + ' in fixed costs, set aside before any of this. Spends tagged Rent & bills don’t count against your daily budget.</p>';
+  if (c.cyc.length) h += '<button type="button" class="btn quiet block" data-act="share-cycle">' + ic('share', 18) + ' <span>Share this cycle</span></button>';
   return h;
 }
 

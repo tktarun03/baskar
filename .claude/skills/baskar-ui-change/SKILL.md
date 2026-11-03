@@ -42,6 +42,10 @@ Read extra data from `el.dataset`.
 4. If it has a form, route the form id to your save function in the `submit` listener in `js/app/actions.js`.
 5. Run `node tests/run-tests.js`. The structure check confirms the file is loaded, on the right version and has no name clashes.
 
+### Share button
+
+Use `shareButton(act, label)` or an `icon-btn` with `ic('share')`. Build the text in English and pass each sentence through `T()`, so it comes out in the chosen language. Then call `shareText(title, text)`, or `shareFile(name, data, type, title)` for files. Keep everything before the share call synchronous, or iPhone drops the tap's permission. Add the sentences to `BASKAR_I18N_ROWS`.
+
 ### Settings entry
 
 Use `setItem(act, icon, label, value)` inside `sheetSettings()` (`js/features/settings.js`).

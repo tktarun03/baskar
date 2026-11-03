@@ -34,7 +34,8 @@ function sheetSettings() {
     '<span class="eyebrow pad">About</span>' +
     '<section class="card tight">' + setItem('history', 'info', 'Version history', 'Version ' + esc(APP_VERSION)) +
     setItem('selftest', 'check', 'Run self-check', 'Tests the bank-SMS reader, budget maths, one-line entry and CSV') +
-    setItem('refresh', 'refresh', 'Refresh app', 'Load the latest version. Your data stays.') + '</section>' +
+    setItem('refresh', 'refresh', 'Refresh app', 'Load the latest version. Your data stays.') +
+    (appLink() ? setItem('share-app', 'share', 'Share BasKar', 'Send the link to a friend') : '') + '</section>' +
     (S.p.demo ? '<button type="button" class="btn ghost block" data-act="reset-demo">Reset demo data</button>' : '') +
     '<button type="button" class="btn ghost block danger-text" data-act="acct-delete">' + (S.sheet.confirmDel ? 'Tap again to delete this account forever' : 'Delete this account') + '</button>';
 }

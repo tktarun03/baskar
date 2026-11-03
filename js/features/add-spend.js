@@ -32,6 +32,7 @@ function sheetTxn(sh) {
     (t && t.kind === 'expense' && t.merchant ? '<div class="setrow"><div class="grow"><span class="label" id="rule-lbl">Apply to every payment from “' + esc(t.merchant) + '”</span><span class="hint">Uses this name and category for past and future payments from this payee, including bank SMS.</span></div><button type="button" class="switch" role="switch" aria-labelledby="rule-lbl" aria-checked="' + !!sh.makeRule + '" data-act="rule-toggle"><span></span></button></div>' : '') +
     '<p class="error" id="t-err" role="alert" hidden></p>' +
     '<button type="submit" class="btn block" id="t-save">' + (t ? 'Save changes' : (kind === 'income' ? 'Add income' : 'Add spend')) + '</button>' +
+    (t ? '<button type="button" class="btn quiet block" data-act="share-txn">' + ic('share', 18) + ' <span>Share this payment</span></button>' : '') +
     (t ? '<button type="button" class="btn ghost block danger-text" data-act="del-txn">Delete transaction</button>' : '') +
     '</form>';
 }
