@@ -17,6 +17,9 @@ function cycleFor(startDay, now) {
 
 function counts(t) { return t.kind === 'save' || (t.kind === 'expense' && t.cat !== 'bills'); }
 
+/* Spending before the account existed, entered at sign-up for a cycle that had already started. Counts only in that cycle. */
+function preSpent(p, cs) { return p.startSpent && p.startSpent.cs === cs ? Math.max(num(p.startSpent.amt), 0) : 0; }
+
 function discOf(p) { return Math.max(num(p.income) - p.fixed.reduce(function (a, f) { return a + num(f.amount); }, 0), 0); }
 
 function calc(p, now) {
@@ -30,7 +33,7 @@ function calc(p, now) {
   var cs = cy.start.getTime(), ce = cy.end.getTime();
   var inCy = p.txns.filter(function (t) { return counts(t) && t.ts >= cs && t.ts < ce && t.ts < t1; });
   var cyc = inCy.filter(function (t) { return t.kind === 'expense'; });
-  var before = inCy.filter(function (t) { return t.ts < t0; }).reduce(sumA, 0);
+  var before = inCy.filter(function (t) { return t.ts < t0; }).reduce(sumA, 0) + preSpent(p, cs);
   var todayList = cyc.filter(function (t) { return t.ts >= t0; }).sort(function (a, b) { return a.ts - b.ts; });
   var spentToday = todayList.reduce(sumA, 0);
   var savedToday = inCy.filter(function (t) { return t.kind === 'save' && t.ts >= t0; }).reduce(sumA, 0);
@@ -50,7 +53,7 @@ function catTotals(list) { var o = {}; list.forEach(function (t) { var k = t.cat
 
 /* Replays a cycle day by day with the current plan, to know each past day's own budget. */
 function replayCycle(p, cy, untilTs) {
-  var disc = discOf(p), created = startOfDay(new Date(p.createdAt || 0)).getTime(), out = [], usedSoFar = 0;
+  var disc = discOf(p), created = startOfDay(new Date(p.createdAt || 0)).getTime(), out = [], usedSoFar = preSpent(p, cy.start.getTime());
   for (var i = 0; i < cy.days; i++) {
     var d = new Date(cy.start.getFullYear(), cy.start.getMonth(), cy.start.getDate() + i), ds = d.getTime();
     if (ds >= untilTs) break;

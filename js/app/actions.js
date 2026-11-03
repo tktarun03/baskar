@@ -94,6 +94,7 @@ function onField(e) {
     setPath(S.draft, el.dataset.d, el.value);
     if (el.dataset.d === 'currency') { var s = $('#cur-sym'); if (s) s.textContent = curSymbol(el.value); }
     var pv = $('#create-preview'); if (pv) pv.innerHTML = previewHtml(S.draft.income, S.draft.fixed, S.draft.cycleStart, S.draft.currency);
+    var rv = $('#create-review'); if (rv) rv.innerHTML = reviewHtml(S.draft);
     return;
   }
   if (el.dataset && el.dataset.pl !== undefined && S.plan) {

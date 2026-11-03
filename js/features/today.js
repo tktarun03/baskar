@@ -24,7 +24,7 @@ function renderToday(c) {
     '<div class="bar" role="img" aria-label="' + esc(money(c.usedToday) + ' used of ' + money(c.todayBudget)) + '">' + segs + marker + '</div>' +
     '<div class="row between hero-foot"><span>' + esc(money(c.spentToday)) + ' spent' + (c.savedToday ? ' · ' + esc(money(c.savedToday)) + ' saved' : '') + '</span><span class="muted">of ' + esc(money(c.todayBudget)) + '</span></div>' +
     '<p class="bubble"><span class="mood">' + (roastOn ? moodLine(mood) : (c.over ? 'Over budget' : 'On track')) + '</span>' + esc(bubble) + '</p></section>' +
-    '<p class="hint pad">' + esc(adjText) + '</p>' + quickRow();
+    '<p class="hint pad">' + esc(adjText) + '</p>' + quickRow() + startCard();
 
   var caps = capStatus(S.p, c).filter(function (x) { return x.pct >= 0.8; });
   h += caps.map(function (x) {

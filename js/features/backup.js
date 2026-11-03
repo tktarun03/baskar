@@ -12,13 +12,11 @@ function backupDue() {
 }
 function lastBackupText() { return S.p.lastBackup ? 'Last backup ' + relDays(-Math.round((startOfDay(new Date()) - startOfDay(new Date(S.p.lastBackup))) / DAY)).toLowerCase() : 'Never backed up'; }
 
-/* iPhone or iPad Safari, opened as a website rather than from the Home Screen. */
+/* iPhone or iPad Safari, opened as a website rather than from the Home Screen (iosSafari() is in onboarding.js). */
 function homeScreenTipDue() {
-  if (!IS_TOP || !S.p) return false;
+  if (!S.p) return false;
   try { if (localStorage.getItem('bk_a2hs_off')) return false; } catch (e) { }
-  var ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  var standalone = navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
-  return ios && !standalone;
+  return iosSafari();
 }
 
 function renderReminders() {
@@ -30,7 +28,7 @@ function renderReminders() {
   }
   if (homeScreenTipDue()) {
     h += '<section class="card"><div class="row"><span class="tile" style="--c:var(--accent)">' + ic('phone', 18) + '</span><div class="grow"><strong>Add to your Home Screen</strong><span class="hint">Opens like an app and works offline.</span></div></div>' +
-      '<p class="hint">Safari also keeps the data of Home Screen apps. Tap the Share button, then “Add to Home Screen”.</p>' +
+      '<p class="hint"><span>Tap the Share button, then “Add to Home Screen”.</span> <span>The Home Screen app keeps its own data, so back up here first, then restore the file there from Settings → Storage and backup.</span></p>' +
       '<button type="button" class="btn ghost sm" data-act="a2hs-off">Got it</button></section>';
   }
   return h;

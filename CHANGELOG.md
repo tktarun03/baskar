@@ -2,6 +2,15 @@
 
 The same list is in the app under **Settings → Version history**. Newest first.
 
+## 2.7 · 3 Nov 2026
+- Sign-up (`renderCreate` in `js/features/auth.js`) is 5 steps instead of 3. Fixed costs and wallets are now separate screens, and step 5 reviews the first day's number: pay − fixed − already spent, ÷ days left. `.steps` takes its count from `--n`.
+- Mid-cycle start: if the cycle began before today, step 5 asks for "Already spent this cycle" (optional). It's saved as `startSpent: { cs, amt }`, and `calc()` and `replayCycle()` count it only in that cycle (`preSpent()`). Before this, someone joining on day 20 got the whole cycle's money spread over the days left. Two self-check cases cover it.
+- Fixed-cost rows left at 0 are no longer saved as fixed costs.
+- Get started checklist (`js/features/onboarding.js`) on Today, for accounts created from 2.7 (`onboard.show`; `migrate()` defaults older accounts and the demo to hidden). Steps: first spend, a bank SMS/receipt/CSV import, a goal, Face ID (when available), a backup. Steps are ticked from the account's own data, and the list can be hidden.
+- Tour: Get started on the last slide opens sign-up. Skip still goes to the sign-in screen.
+- iPhone Safari, no accounts yet: the sign-in screen suggests adding the app to the Home Screen first, because the Home Screen app keeps its own storage. The Today tip now says to back up and restore when moving.
+- i18n: `NUM_RE` now reads Arabic-formatted amounts (`‏12,000 ر.ق.‏`, `‏9 US$`) as one number, so those sentences translate. Arabic currency values are isolated right-to-left (RLI). There are new self-check cases, plus 38 new translation rows.
+
 ## 2.6.1 · 3 Nov 2026
 - Fixed: the intro tour's footer button was clipped on iPhone. The tour sized itself with `100dvh`, but the root already pads for the safe areas, so it overflowed by their height. It now fills the column with flex (`flex: 1; min-height: 0`), the slider shrinks first, and a long slide scrolls inside itself.
 

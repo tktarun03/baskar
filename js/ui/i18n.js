@@ -15,7 +15,9 @@ function LOC() { return (LANGS[LANG] || LANGS.en).locale; }
 
 function dots(parts) { return parts.filter(function (x) { return x !== '' && x != null; }).map(function (x) { return '<span>' + esc(x) + '</span>'; }).join(' · '); }
 
-var NUM_RE = /(?:[−\-+→≈]\s?)?(?:(?:[A-Z]{3}|[₹$€£])[   ]?)?(?:\d[\d,]*(?:\.\d+)?[KMB]?%?|••••)/g;
+/* An amount: an optional sign, then either the Arabic form (right-to-left mark, number, currency after it: ‏12 ر.ق.‏, ‏12 US$)
+   or a number with an optional currency before it (QAR 12, ₹12, 3%, 1.5K). */
+var NUM_RE = /(?:[−\-+→≈]\s?)?(?:‏\d[\d,]*(?:\.\d+)?(?:[    ](?:[ء-ي]+\.)+|[    ]?(?:US\$|[A-Z]{3}|[₹$€£]))?‏?|(?:(?:[A-Z]{3}|[₹$€£])[    ]?)?(?:\d[\d,]*(?:\.\d+)?[KMB]?%?|••••))/g;
 
 function normKey(s) { var vals = []; var key = s.replace(NUM_RE, function (m) { vals.push(m); return '{' + (vals.length - 1) + '}'; }); return { key: key, vals: vals }; }
 
@@ -54,8 +56,9 @@ function trText(s) {
   var nk = normKey(k0), t = D[nk.key];
   if (t == null) t = wildTr(D, nk.key);
   if (t == null) return s;
-  var iso = LANG === 'ar' ? ['\u2066', '\u2069'] : ['', ''];
-  return lead + brandify(t.replace(/\{(\d+)\}/g, function (_, i) { return nk.vals[+i] != null ? iso[0] + nk.vals[+i] + iso[1] : ''; })) + trail;
+  /* Arabic: isolate each value, left to right unless it carries an Arabic currency sign (then it keeps its own order). */
+  function iso(v) { return LANG !== 'ar' ? v : (/[\u0600-\u06FF]/.test(v) ? '\u2067' : '\u2066') + v + '\u2069'; }
+  return lead + brandify(t.replace(/\{(\d+)\}/g, function (_, i) { return nk.vals[+i] != null ? iso(nk.vals[+i]) : ''; })) + trail;
 }
 
 var I18N_ATTRS = ['placeholder', 'aria-label', 'title', 'alt'];

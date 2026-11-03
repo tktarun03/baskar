@@ -1,6 +1,7 @@
 /* BasKar · js/features/intro.js
    The intro tour: five swipeable slides that explain the app to someone new. Shown once on a device that has no
    accounts yet (before the sign-up screen), and any time from Settings → How BasKar works. Skip is always there.
+   On a new device, Get started opens sign-up; Skip goes to the sign-in screen.
    Slides use CSS scroll-snap, so swiping is the browser's own; the dots and Next button follow the scroll.
    All app files share one global scope and load in the order listed in index.html. */
 'use strict';
@@ -61,7 +62,7 @@ Object.assign(ACT, {
   'intro-next': function () {
     var tr = $('#intro-track'); if (!tr) return;
     var n = tr.children.length, i = S.intro.i || 0;
-    if (i >= n - 1) { introClose(); return; }
+    if (i >= n - 1) { if (S.p) introClose(); else { introDone(); S.intro = null; ACT.create(); } return; }  // Get started goes straight to sign-up
     tr.children[i + 1].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
   },
   'intro-skip': function () { introClose(); },

@@ -5,6 +5,8 @@
 
 var P = {
   plus: '<path d="M12 5v14M5 12h14"/>',
+  up: '<path d="M12 19V5M6 11l6-6 6 6"/>',
+  down: '<path d="M12 5v14M6 13l6 6 6-6"/>',
   clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
   list: '<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
   chart: '<path d="M5 20V11M12 20V4M19 20v-6"/>',

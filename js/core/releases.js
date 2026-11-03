@@ -5,6 +5,14 @@
 
 /* Version history: add a new entry at the top with every release. */
 var RELEASES = [
+  { v: '2.7', date: '3 Nov 2026', notes: [
+    'Sign-up is now five short steps: your account, pay, fixed costs, wallets, then your daily number with how it’s worked out',
+    'Starting partway through your pay cycle? Add roughly what you’ve already spent, so the first day’s number is right',
+    'New accounts get a “Get started” list on Today: first spend, bank SMS, a goal, Face ID and a backup. Each ticks itself off',
+    'The tour’s Get started button now goes straight to sign-up',
+    'On iPhone, a note suggests adding the app to your Home Screen before signing up, since it keeps its own data',
+    'Fixed: in Arabic, sentences with Arabic-style amounts (like ر.ق.) stayed in English'
+  ] },
   { v: '2.6.1', date: '3 Nov 2026', notes: [
     'Fixed: the tour’s Next and Get started button was cut off at the bottom on iPhone'
   ] },

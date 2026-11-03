@@ -43,6 +43,8 @@ All UI state is one object, `S`:
   fx: { INR: 0.044 },                                        // remembered exchange rates for SMS in other currencies
   dismissedSubs: [], createdAt, demo,
   lastBackup, backupSnooze,                                // timestamps for the backup reminder
+  startSpent: { cs, amt } | null,                          // spent before sign-up, entered at step 5; counts only in the cycle starting at cs
+  onboard: { show },                                       // Get started list on Today (true only for accounts made from 2.7)
   settings: { roast: true, hide: false, theme: 'system' }
 }
 ```
@@ -56,7 +58,7 @@ Category keys (`CATS`) are `food`, `groceries`, `shopping`, `transport`, `coffee
 ```
 disc        = max(income − Σ fixed, 0)                    money for the cycle
 base        = disc / days in cycle                        the "normal" daily budget
-before      = Σ spends + goal savings this cycle, before today (bills excluded)
+before      = Σ spends + goal savings this cycle, before today (bills excluded) + startSpent if it's this cycle
 todayBudget = max(disc − before, 0) / days left (including today)
 left        = todayBudget − (spent today + saved today)
 tomorrow    = max(disc − before − used today, 0) / (days left − 1)

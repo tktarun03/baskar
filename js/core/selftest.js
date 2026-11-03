@@ -78,6 +78,10 @@ function runSelfTest() {
     check(B, 'Tomorrow if nothing more is spent', k1.tomorrow, 41000 / 28);
     S.p.txns.push({ id: 'c', ts: new Date(2026, 10, 2, 9).getTime(), kind: 'save', amt: 500, cat: 'savings', goal: 'g', merchant: 'Goal', wallet: '' });
     check(B, 'Money moved to a goal uses today’s allowance', calc(S.p, nov2).left, 41000 / 29 - 500);
+    S.p.txns = []; S.p.startSpent = { cs: new Date(2026, 10, 1).getTime(), amt: 13000 };
+    check(B, 'Spent before sign-up comes off this cycle', calc(S.p, nov2).todayBudget, 30000 / 29);
+    check(B, '…and not off the next cycle', calc(S.p, new Date(2026, 11, 2, 12)).todayBudget, 43000 / 30);
+    S.p.startSpent = null;
     check(B, '7 am is breakfast', mealFor(new Date(2026, 10, 2, 7).getTime()), 'breakfast');
     check(B, '1 pm is lunch', mealFor(new Date(2026, 10, 2, 13).getTime()), 'lunch');
     check(B, '8 pm is dinner', mealFor(new Date(2026, 10, 2, 20).getTime()), 'dinner');
@@ -123,6 +127,8 @@ function runSelfTest() {
     check(B, 'Every app file was loaded', vers.length >= 40, true);
     check(B, 'All app files are on version ' + RELEASES[0].v, vers.filter(function (v) { return v !== RELEASES[0].v; }).join(', '), '');
     var LG = 'Languages', keepLang = LANG, I = window.BASKAR_I18N || {};
+    check(LG, 'Arabic amounts (‏12 ر.ق.‏) are read as numbers', normKey('\u200f12,000 ر.ق.\u200f a cycle after \u200f0 ر.ق.\u200f of fixed costs, over 31 days.').key, '{0} a cycle after {1} of fixed costs, over {2} days.');
+    check(LG, 'A count before a word isn’t taken for a currency', normKey('Paste 3 SMS').key, 'Paste {0} SMS');
     var RW = window.BASKAR_I18N_ROWS || [];
     check(LG, 'Every translation row has English, Arabic and Tamil', RW.filter(function (r) { return !r || r.length !== 3 || !r[0] || !r[1] || !r[2]; }).length, 0);
     check(LG, 'No English text is listed twice', RW.length - Object.keys(I.ar || {}).length, 0);

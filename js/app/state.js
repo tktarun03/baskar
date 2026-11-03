@@ -59,6 +59,8 @@ function migrate(p) {
   p.rules = Array.isArray(p.rules) ? p.rules : [];
   p.fx = p.fx && typeof p.fx === 'object' ? p.fx : {};
   if (!p.createdAt) p.createdAt = p.txns.length ? p.txns.reduce(function (m, t) { return Math.min(m, t.ts); }, Date.now()) : Date.now();
+  p.onboard = p.onboard && typeof p.onboard === 'object' ? p.onboard : { show: false };  // Get started list: only accounts made from 2.7
+  p.startSpent = p.startSpent && isFinite(p.startSpent.cs) && num(p.startSpent.amt) > 0 ? p.startSpent : null;  // spent before sign-up, that cycle only
   p.settings = Object.assign({ roast: true, hide: false, theme: 'system' }, p.settings || {});
   return p;
 }
