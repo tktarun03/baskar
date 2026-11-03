@@ -80,6 +80,7 @@ There is **no build step and no bundler**. `index.html` loads plain `<script>` f
 | Edit profile (photo, name, email), change password, theme colour | `js/features/profile.js` |
 | Share buttons (recap image, week, goal, payment, cycle, files, invite) | `js/features/share.js` |
 | Scan a paper receipt (OCR, review, add) | `js/features/scan-receipt.js` (parser in `js/core/receipt.js`) |
+| Intro tour (first-run slides, replay from Settings) | `js/features/intro.js` |
 | Rating, feedback (GitHub issue form), QR invite | `js/features/feedback.js`; the forms are in `.github/ISSUE_TEMPLATE/`. For a white-label copy, change `APP_SITE` and `APP_REPO`. |
 | Backup file, restore, Today reminders | `js/features/backup.js` |
 | Saving a file (download) | `js/app/files.js` |
@@ -125,6 +126,7 @@ Pushing to `main` publishes to GitHub Pages ("Deploy from a branch", root folder
 - **Cookie size.** Each profile is compressed and split into cookies of about 3.6 KB each. Large accounts overflow to local storage automatically (`Store.set`). Don't store big blobs per transaction.
 - **Safari evicts storage** after about 7 days without a visit (Home Screen apps are exempt). That's why Today shows a backup reminder and an Add to Home Screen tip.
 - **Saving is asynchronous.** With encryption on, `saveProfile()` snapshots the data and seals it in the background, in order (`Vault.queue`). Don't read `bk_p_<id>` back right after saving and expect plain JSON.
+- **First run.** On a device with no accounts, `S.intro` is set at boot and the tour covers the sign-in screen until it's skipped or finished. Browser tests that tap the sign-in screen should set `localStorage.bk_intro_done = '1'` first.
 - **Locked state.** After a cold start without a remembered key, `S.p` is null and the unlock screen shows. With a PIN, `S.lock` is set and `renderAll()` shows the PIN pad instead of the app, even when `S.p` is loaded. Code that runs at boot must not assume an open account.
 - **Face ID is an extra key, never the only one.** The password must always unlock. Don't add a Face ID path that keeps the data key in plain storage; that would only be a screen, not encryption.
 - **Face ID needs real hardware to test.** Chromium's virtual authenticator (CDP `WebAuthn.addVirtualAuthenticator` with `hasPrf: true`) covers the code paths; Safari behaviour needs an iPhone.

@@ -33,7 +33,8 @@ function sheetSettings() {
     setItem('backup', 'database', 'Back up now', lastBackupText()) +
     setItem('storage', 'database', 'Storage and backup', whereTxt + ' · ' + kb(u.raw)) + '</section>' +
     '<span class="eyebrow pad">About</span>' +
-    '<section class="card tight">' + setItem('history', 'info', 'Version history', 'Version ' + esc(APP_VERSION)) +
+    '<section class="card tight">' + setItem('intro', 'info', 'How BasKar works', 'A 30-second tour') +
+    setItem('history', 'info', 'Version history', 'Version ' + esc(APP_VERSION)) +
     setItem('selftest', 'check', 'Run self-check', 'Tests the bank-SMS reader, budget maths, one-line entry and CSV') +
     setItem('refresh', 'refresh', 'Refresh app', 'Load the latest version. Your data stays.') + '</section>' +
     '<span class="eyebrow pad">Spread the word</span>' +

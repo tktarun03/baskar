@@ -5,6 +5,10 @@
 
 /* Version history: add a new entry at the top with every release. */
 var RELEASES = [
+  { v: '2.6', date: '3 Nov 2026', notes: [
+    'A short swipeable tour explains the app to new users before they sign up; Skip is always there',
+    'Replay it any time from Settings → How BasKar works, or “How it works” on the sign-in screen'
+  ] },
   { v: '2.5', date: '3 Nov 2026', notes: [
     'Rate the app and send feedback from Settings → Spread the word; after a week of use, Today asks once how it’s going',
     'Feedback opens a ready-filled GitHub page, or you can send it privately through any app',

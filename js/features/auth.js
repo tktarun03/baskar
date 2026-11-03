@@ -26,7 +26,7 @@ function renderAuth() {
       profs.map(function (m) { return '<button type="button" class="prow" data-act="pick" data-id="' + esc(m.id) + '">' + avatar(m, 42) + '<span class="grow"><strong>' + esc(m.name) + '</strong><span class="hint">' + dots([m.email || 'No email', m.demo ? 'Example data' : '']) + '</span></span>' + ic('chev', 18) + '</button>'; }).join('') +
       '</div></section>';
   }
-  h += '<div class="stack"><button type="button" class="btn block" data-act="create">Create an account</button><button type="button" class="btn ghost block" data-act="demo">Try the demo</button><button type="button" class="btn quiet sm" data-act="brand" style="align-self:center">Customize branding</button></div>' +
+  h += '<div class="stack"><button type="button" class="btn block" data-act="create">Create an account</button><button type="button" class="btn ghost block" data-act="demo">Try the demo</button><button type="button" class="btn-link" data-act="intro" style="align-self:center">How it works</button><button type="button" class="btn quiet sm" data-act="brand" style="align-self:center">Customize branding</button></div>' +
     '<div class="stack-xs"><span class="label">Language</span>' + langSeg() + '</div>';
   if (Store.note) h += '<p class="notice">' + esc(Store.note) + '</p>';
   h += '<div class="foot stack-xs"><div>' + storageBadge() + '</div><p class="fine">Nothing leaves this browser. Each account is saved as JSON, compressed with lz-string and split across cookies on this device. Clearing site data deletes it, so export a copy from Plan if it matters.</p></div>';

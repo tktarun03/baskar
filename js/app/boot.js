@@ -20,7 +20,7 @@ var sess = Store.get('bk_sess');
 /* Reopen the last account. Its key is remembered for this tab (or this device, with "Stay unlocked"); otherwise the
    unlock screen asks for the password. Data saved before 2.0 is plain: ask once for the password to seal it. */
 (function () {
-  function done() { renderAll(); hideSplash(); }
+  function done() { if (introDue()) S.intro = { i: 0 }; renderAll(); hideSplash(); }
   if (!(sess && sess.pid && meta(sess.pid))) { done(); return; }
   var pid = sess.pid, rec = Store.get('bk_p_' + pid), raw = vaultRecall(pid), inTab = '';
   try { inTab = sessionStorage.getItem('bk_k_' + pid) || ''; } catch (e) { }

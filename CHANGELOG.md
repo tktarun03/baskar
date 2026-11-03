@@ -2,6 +2,11 @@
 
 The same list is in the app under **Settings → Version history**. Newest first.
 
+## 2.6 · 3 Nov 2026
+- Intro tour (`js/features/intro.js`): five slides (one number a day, every spend counts it down, less typing, keep what you don't spend, private by design) using CSS scroll-snap, so swiping is native and works right-to-left
+- Shown once on a device with no accounts (`localStorage.bk_intro_done`), before the sign-up screen; replay from Settings → How BasKar works or the sign-in screen's "How it works"
+- `renderAll()` shows the tour above everything except the PIN lock; sheets are hidden while it's open
+
 ## 2.5 · 3 Nov 2026
 - Ratings and feedback (`js/features/feedback.js`): 1–5 stars plus "What do you like?" and "What would make it better?"
   - **Post on GitHub** opens `issues/new?template=feedback.yml` with the fields pre-filled by id (rating, liked, improve, details). The person submits it on GitHub, where it's public and needs an account.

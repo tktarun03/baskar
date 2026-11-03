@@ -31,7 +31,7 @@ function renderChrome() {
 
 function renderSheet() {
   var root = $('#sheet-root');
-  if (!S.sheet || S.lock || (!S.p && S.sheet.type !== 'brand' && S.sheet.type !== 'history')) { root.innerHTML = ''; root.removeAttribute('data-type'); return; }
+  if (!S.sheet || S.lock || S.intro || (!S.p && S.sheet.type !== 'brand' && S.sheet.type !== 'history')) { root.innerHTML = ''; root.removeAttribute('data-type'); return; }
   var sh = S.sheet, inner = '', prevSheet = root.querySelector('.sheet-body'), prevTop = prevSheet ? prevSheet.scrollTop : 0, same = !!prevSheet && root.getAttribute('data-type') === sh.type;
   if (sh.type === 'brand') {
     root.innerHTML = sheetFrame(sheetBrand(), same);
@@ -89,9 +89,9 @@ function closeSheet() { if (S.sheet && S.sheet.type === 'brand') { S.brandDraft 
 
 function renderAll() {
   var app = $('#app'), old = $('#scroller'), prev = old ? old.scrollTop : 0;
-  var main = S.p && !S.lock;
-  app.className = 'app' + (main ? '' : ' is-auth');
-  app.innerHTML = brandify('<main class="scroller" id="scroller"><div class="col">' + (S.lock ? renderPinLock() : S.p ? renderMain() : renderAuth()) + '</div></main>' + (main ? renderChrome() : ''), true);
+  var main = S.p && !S.lock && !S.intro;
+  app.className = 'app' + (main ? '' : ' is-auth') + (S.intro && !S.lock ? ' is-intro' : '');
+  app.innerHTML = brandify('<main class="scroller" id="scroller"><div class="col">' + (S.lock ? renderPinLock() : S.intro ? renderIntro() : S.p ? renderMain() : renderAuth()) + '</div></main>' + (main ? renderChrome() : ''), true);
   var sc = $('#scroller'); if (sc) sc.scrollTop = prev;
   renderSheet();
   if (S.p && S.tab === 'insights') drawCharts(); else { charts.forEach(function (ch) { try { ch.destroy(); } catch (e) { } }); charts = []; }
