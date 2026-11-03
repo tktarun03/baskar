@@ -456,11 +456,13 @@ button, a, input, select, textarea, label { touch-action: manipulation; }
 textarea.input.prose { font-family: var(--f-body); }
 
 /* Intro tour */
-.app.is-intro .col { padding-block: 16px 24px; }
-.intro-wrap { display: flex; flex-direction: column; gap: 18px; min-height: calc(100dvh - 40px); }
-.intro-track { flex: 1; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; overscroll-behavior-x: contain; margin: 0 -20px; }
+/* The tour fills the space the scroller actually has (which already excludes the iPhone safe areas), not 100dvh. */
+.app.is-intro .col { padding-block: 16px 20px; }
+.intro-wrap { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 18px; }
+.intro-wrap > .btn { flex: none; }
+.intro-track { flex: 1 1 auto; min-height: 0; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; overscroll-behavior-x: contain; margin: 0 -20px; }
 .intro-track::-webkit-scrollbar { display: none; }
-.intro-slide { flex: 0 0 100%; scroll-snap-align: start; scroll-snap-stop: always; padding: 0 24px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.intro-slide { flex: 0 0 100%; min-height: 0; overflow-y: auto; scroll-snap-align: start; scroll-snap-stop: always; padding: 0 24px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
 .intro-slide .lede { max-width: 34ch; }
 .intro-art { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 18px 0 10px; color: var(--ink-2); }
 .intro-art.card { align-items: stretch; padding: 6px 18px; }

@@ -2,6 +2,9 @@
 
 The same list is in the app under **Settings → Version history**. Newest first.
 
+## 2.6.1 · 3 Nov 2026
+- Fixed: the intro tour's footer button was clipped on iPhone. The tour sized itself with `100dvh`, but the root already pads for the safe areas, so it overflowed by their height. It now fills the column with flex (`flex: 1; min-height: 0`), the slider shrinks first, and a long slide scrolls inside itself.
+
 ## 2.6 · 3 Nov 2026
 - Intro tour (`js/features/intro.js`): five slides (one number a day, every spend counts it down, less typing, keep what you don't spend, private by design) using CSS scroll-snap, so swiping is native and works right-to-left
 - Shown once on a device with no accounts (`localStorage.bk_intro_done`), before the sign-up screen; replay from Settings → How BasKar works or the sign-in screen's "How it works"

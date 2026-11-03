@@ -5,6 +5,9 @@
 
 /* Version history: add a new entry at the top with every release. */
 var RELEASES = [
+  { v: '2.6.1', date: '3 Nov 2026', notes: [
+    'Fixed: the tour’s Next and Get started button was cut off at the bottom on iPhone'
+  ] },
   { v: '2.6', date: '3 Nov 2026', notes: [
     'A short swipeable tour explains the app to new users before they sign up; Skip is always there',
     'Replay it any time from Settings → How BasKar works, or “How it works” on the sign-in screen'
