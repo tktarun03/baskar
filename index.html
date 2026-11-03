@@ -28,7 +28,7 @@ img { max-width: 100%; }
 [hidden] { display: none !important; }
 </style>
 <!-- Every app file carries ?v=<version> so phones fetch the new copy after a release. Change them all together (see .claude/skills/baskar-release). -->
-<link rel="stylesheet" href="css/app.css?v=2.3.1">
+<link rel="stylesheet" href="css/app.css?v=2.4">
 </head>
 <body>
 <div id="splash" class="splash" role="status" aria-label="Loading" data-noi18n>
@@ -66,52 +66,54 @@ img { max-width: 100%; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
 <!-- App: classic scripts sharing one global scope, in dependency order. Translations first, boot last. -->
-<script src="js/i18n-rows.js?v=2.3.1"></script>
-<script src="js/core/util.js?v=2.3.1"></script>
-<script src="js/core/storage.js?v=2.3.1"></script>
-<script src="js/core/vault.js?v=2.3.1"></script>
-<script src="js/core/passkey.js?v=2.3.1"></script>
-<script src="js/core/format.js?v=2.3.1"></script>
-<script src="js/core/budget.js?v=2.3.1"></script>
-<script src="js/core/parse.js?v=2.3.1"></script>
-<script src="js/core/insights.js?v=2.3.1"></script>
-<script src="js/core/selftest.js?v=2.3.1"></script>
-<script src="js/core/content.js?v=2.3.1"></script>
-<script src="js/core/releases.js?v=2.3.1"></script>
-<script src="js/ui/icons.js?v=2.3.1"></script>
-<script src="js/ui/brand.js?v=2.3.1"></script>
-<script src="js/ui/i18n.js?v=2.3.1"></script>
-<script src="js/app/state.js?v=2.3.1"></script>
-<script src="js/app/demo.js?v=2.3.1"></script>
-<script src="js/app/render.js?v=2.3.1"></script>
-<script src="js/app/files.js?v=2.3.1"></script>
-<script src="js/app/actions.js?v=2.3.1"></script>
-<script src="js/features/accounts.js?v=2.3.1"></script>
-<script src="js/features/activity.js?v=2.3.1"></script>
-<script src="js/features/add-spend.js?v=2.3.1"></script>
-<script src="js/features/auth.js?v=2.3.1"></script>
-<script src="js/features/backup.js?v=2.3.1"></script>
-<script src="js/features/bank-sms.js?v=2.3.1"></script>
-<script src="js/features/bills.js?v=2.3.1"></script>
-<script src="js/features/branding.js?v=2.3.1"></script>
-<script src="js/features/csv.js?v=2.3.1"></script>
-<script src="js/features/goals.js?v=2.3.1"></script>
-<script src="js/features/insights.js?v=2.3.1"></script>
-<script src="js/features/money.js?v=2.3.1"></script>
-<script src="js/features/payee-rules.js?v=2.3.1"></script>
-<script src="js/features/plan.js?v=2.3.1"></script>
-<script src="js/features/profile.js?v=2.3.1"></script>
-<script src="js/features/quick-adds.js?v=2.3.1"></script>
-<script src="js/features/quick-unlock.js?v=2.3.1"></script>
-<script src="js/features/recap.js?v=2.3.1"></script>
-<script src="js/features/self-check.js?v=2.3.1"></script>
-<script src="js/features/settings.js?v=2.3.1"></script>
-<script src="js/features/share.js?v=2.3.1"></script>
-<script src="js/features/storage-backup.js?v=2.3.1"></script>
-<script src="js/features/today.js?v=2.3.1"></script>
-<script src="js/features/version-history.js?v=2.3.1"></script>
-<script src="js/features/wallets.js?v=2.3.1"></script>
-<script src="js/features/weekly-review.js?v=2.3.1"></script>
-<script src="js/app/boot.js?v=2.3.1"></script>
+<script src="js/i18n-rows.js?v=2.4"></script>
+<script src="js/core/util.js?v=2.4"></script>
+<script src="js/core/storage.js?v=2.4"></script>
+<script src="js/core/vault.js?v=2.4"></script>
+<script src="js/core/passkey.js?v=2.4"></script>
+<script src="js/core/format.js?v=2.4"></script>
+<script src="js/core/budget.js?v=2.4"></script>
+<script src="js/core/parse.js?v=2.4"></script>
+<script src="js/core/insights.js?v=2.4"></script>
+<script src="js/core/receipt.js?v=2.4"></script>
+<script src="js/core/selftest.js?v=2.4"></script>
+<script src="js/core/content.js?v=2.4"></script>
+<script src="js/core/releases.js?v=2.4"></script>
+<script src="js/ui/icons.js?v=2.4"></script>
+<script src="js/ui/brand.js?v=2.4"></script>
+<script src="js/ui/i18n.js?v=2.4"></script>
+<script src="js/app/state.js?v=2.4"></script>
+<script src="js/app/demo.js?v=2.4"></script>
+<script src="js/app/render.js?v=2.4"></script>
+<script src="js/app/files.js?v=2.4"></script>
+<script src="js/app/actions.js?v=2.4"></script>
+<script src="js/features/accounts.js?v=2.4"></script>
+<script src="js/features/activity.js?v=2.4"></script>
+<script src="js/features/add-spend.js?v=2.4"></script>
+<script src="js/features/auth.js?v=2.4"></script>
+<script src="js/features/backup.js?v=2.4"></script>
+<script src="js/features/bank-sms.js?v=2.4"></script>
+<script src="js/features/bills.js?v=2.4"></script>
+<script src="js/features/branding.js?v=2.4"></script>
+<script src="js/features/csv.js?v=2.4"></script>
+<script src="js/features/goals.js?v=2.4"></script>
+<script src="js/features/insights.js?v=2.4"></script>
+<script src="js/features/money.js?v=2.4"></script>
+<script src="js/features/payee-rules.js?v=2.4"></script>
+<script src="js/features/plan.js?v=2.4"></script>
+<script src="js/features/profile.js?v=2.4"></script>
+<script src="js/features/quick-adds.js?v=2.4"></script>
+<script src="js/features/quick-unlock.js?v=2.4"></script>
+<script src="js/features/recap.js?v=2.4"></script>
+<script src="js/features/scan-receipt.js?v=2.4"></script>
+<script src="js/features/self-check.js?v=2.4"></script>
+<script src="js/features/settings.js?v=2.4"></script>
+<script src="js/features/share.js?v=2.4"></script>
+<script src="js/features/storage-backup.js?v=2.4"></script>
+<script src="js/features/today.js?v=2.4"></script>
+<script src="js/features/version-history.js?v=2.4"></script>
+<script src="js/features/wallets.js?v=2.4"></script>
+<script src="js/features/weekly-review.js?v=2.4"></script>
+<script src="js/app/boot.js?v=2.4"></script>
 </body>
 </html>

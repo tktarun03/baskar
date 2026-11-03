@@ -66,6 +66,15 @@ Every check must pass, not just yours.
 - If a bank uses a new header name (e.g. "Txn Particulars", "Dr Amount"), add it to the matching list in `detectCols()`.
 - Add a test with a minimal CSV next to the existing `CSV` checks in `runSelfTest()`: three or four lines, anonymized.
 
+## Paper receipts (scanned)
+
+- The parser is `parseReceipt()` in `js/core/receipt.js`. Its test bills are in `selfTestReceipts()`, written the way OCR returns text, including stray spaces.
+- To fix a misread bill:
+  1. Add a case with the OCR text. It's in `S.sheet.r` while the review is open, or you can retype it from the photo.
+  2. Watch the case fail.
+  3. Adjust `RC_TOTAL`, `RC_NOT_TOTAL`, `RC_NOT_ITEM` or `RC_NOT_NAME`.
+- Keep every existing case passing.
+
 ## Formats known to be unsupported
 
 - **Arabic-language SMS** (Gulf banks often send Arabic and English versions). This needs Arabic debit/credit words, Arabic-Indic digits (٠–٩ → 0–9) and Arabic month names. It's on the roadmap.

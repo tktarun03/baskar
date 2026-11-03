@@ -1,6 +1,6 @@
 # BasKar roadmap
 
-Updated 3 Nov 2026, at version 2.3.1. Items are ordered by value to users, then by risk. Each item says why it matters and what "done" means. Change this file in the same commit that ships or reprioritizes an item.
+Updated 3 Nov 2026, at version 2.4. Items are ordered by value to users, then by risk. Each item says why it matters and what "done" means. Change this file in the same commit that ships or reprioritizes an item.
 
 **Status key:** ✅ shipped · 🔨 in progress · ⏭ next · 🧊 later · ❓ needs a decision
 
@@ -49,7 +49,7 @@ All data lives in the user's browser. That makes it private and free to run, and
 |---|---|---|
 | 14 | ❓ **Sync between devices** | Needs accounts on a server, or user-owned storage (an iCloud or Google Drive file). End-to-end encryption keeps the privacy promise. |
 | 15 | ❓ **Automatic bank feeds** | India: the RBI Account Aggregator framework, through a licensed partner. Qatar and the Gulf: depends on each central bank's open-banking rules; check current status before planning. Requires a backend, consent flows and compliance work. |
-| 16 | 🧊 **Receipt photo to transaction** | On-device OCR to stay private. Large download; measure the performance cost first. |
+| 16 | ✅ **Receipt photo to transaction** (2.4) | On-device OCR (Tesseract.js, English). Next: Arabic receipts (`ara` data, ~+3 MB), and learning store names via payee rules. |
 | 17 | 🧊 **Native app wrapper** | Capacitor or similar, for App Store presence and better notifications. Only once the web app is stable. |
 
 ## Decisions log

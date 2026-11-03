@@ -5,6 +5,12 @@
 
 /* Version history: add a new entry at the top with every release. */
 var RELEASES = [
+  { v: '2.4', date: '3 Nov 2026', notes: [
+    'Scan a receipt: photograph a paper bill (several photos for a long one) and the app reads the store, date, total and items',
+    'Reading happens on your phone and the photos are discarded straight away; only the details are saved',
+    'Bills in another currency ask for the exchange rate, like bank SMS',
+    'Items from a scanned bill show when you open the spend'
+  ] },
   { v: '2.3.1', date: '3 Nov 2026', notes: [
     'New browser-tab icon: the coin in your theme colour, or your own logo if you set one'
   ] },

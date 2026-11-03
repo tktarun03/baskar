@@ -48,7 +48,7 @@ function money(n, opts) {
     } catch (e) { nfCache[key] = { format: function (v) { return cur + ' ' + Math.round(v).toLocaleString(); } }; }
   }
   var v = Number(n) || 0;
-  if (!opts.compact && Math.abs(v) >= 10) v = Math.round(v);
+  if (!opts.compact && !opts.exact && Math.abs(v) >= 10) v = Math.round(v);
   return nfCache[key].format(v);
 }
 

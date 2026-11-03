@@ -260,6 +260,7 @@ function addItems(items, src) {
     if (x.goal) t.goal = x.goal;
     if (x.cat === 'food' && MEALS[x.meal]) t.meal = x.meal;
     if (x.orig) t.orig = x.orig;
+    if (x.items && x.items.length) t.items = x.items.slice(0, 60).map(function (it) { return { name: String(it.name || '').slice(0, 40), amt: num(it.amt) }; });
     S.p.txns.push(t); ids.push(t.id);
   });
   S.p.txns.sort(function (a, b) { return a.ts - b.ts; });

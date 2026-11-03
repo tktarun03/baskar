@@ -100,6 +100,20 @@ Overspending spreads itself over the remaining days automatically. Money moved t
 - Five wrong tries delete the PIN and the device key, so the password is needed.
 - It's a screen lock, not encryption. A 4-digit code can't protect data a page can copy.
 
+## Receipt scanning (`js/features/scan-receipt.js`, `js/core/receipt.js`)
+
+- **Photos:** `<input type=file>` gives one or more photos (camera or library). Each is drawn to a grey canvas of at most 2000 px.
+- **Reading:** Tesseract.js reads the canvases one by one in a web worker. The photos and canvases are dropped as soon as the text is out.
+- **Loading:** the OCR library, its WASM core and the English data are pinned on jsDelivr and loaded only on first use.
+- **Parsing:** `parseReceipt(text)` returns `{ merchant, amt, ts, cur, items, sum, found }`.
+  - Total: the strongest total keyword wins (grand total > net total > total), lowest on the bill on a tie. Subtotal, VAT, savings and item-count lines are ignored. With no total keyword, it uses the item sum, then the largest amount that isn't cash or change.
+  - Items: lines with words and a trailing price.
+  - Store: the first name-like line near the top.
+  - Date: `parseWhen()`, the same as bank SMS.
+- **Review:** the person checks the details and unticks wrong item lines. A foreign currency asks for a rate.
+- **Saving:** `addItems()` saves an expense with `src: 'receipt'` and `items`.
+- **Self-check:** sample bills live in `selfTestReceipts()`. Add one when a real bill reads wrongly.
+
 ## Offline (`sw.js`)
 
 - The service worker is registered only on the website (HTTPS or localhost, top level), never inside Claude.

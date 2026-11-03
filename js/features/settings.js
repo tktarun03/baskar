@@ -26,7 +26,8 @@ function sheetSettings() {
     setItem('tpl-manage', 'plus', 'Quick adds', plural(S.p.templates.length, 'saved spend')) +
     setItem('rules', 'repeat', 'Payee rules', plural(S.p.rules.length, 'rule')) + '</section>' +
     '<span class="eyebrow pad">Data</span>' +
-    '<section class="card tight">' + setItem('open-sms', 'message', 'Paste bank SMS', 'Log spends from bank messages') +
+    '<section class="card tight">' + setItem('open-receipt', 'camera', 'Scan a receipt', 'Read a paper bill from photos') +
+    setItem('open-sms', 'message', 'Paste bank SMS', 'Log spends from bank messages') +
     setItem('open-csv', 'upload', 'Import CSV', 'Bank statements or a BasKar export') +
     setItem('export-csv', 'income', 'Export CSV', plural(S.p.txns.length, 'transaction')) +
     setItem('backup', 'database', 'Back up now', lastBackupText()) +

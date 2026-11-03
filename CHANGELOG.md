@@ -2,6 +2,15 @@
 
 The same list is in the app under **Settings → Version history**. Newest first.
 
+## 2.4 · 3 Nov 2026
+- Receipt scanning (`js/features/scan-receipt.js`): take or choose up to 6 photos, OCR on the device with Tesseract.js 5.1.1 (WASM, English), check the result, add as a spend
+- Photos are read from memory (downscaled grey canvas, max 2000 px) and dropped as soon as the text is out; they're never stored
+- OCR files are loaded from jsDelivr only when someone scans (~7 MB: core ~4 MB, English data ~3 MB). Tesseract caches the language data in IndexedDB, and `sw.js` now also caches `cdn.jsdelivr.net`
+- Parser (`js/core/receipt.js`): total by keyword strength (grand total > net total > total, skipping subtotal/VAT/savings lines), date and time via `parseWhen`, store from the top lines, items as lines ending in a price, currency detection; foreign bills ask for a rate and keep `orig`
+- Transactions can carry `items: [{ name, amt }]` (max 60), shown in the spend's sheet
+- `money(v, { exact: true })` keeps decimals above 10
+- Self-check: 17 receipt checks on 4 sample bills (167 checks)
+
 ## 2.3.1 · 3 Nov 2026
 - Favicon: `favicon.svg` (filled coin, thicker strokes so it reads at 16 px) and `favicon.ico` (16/32/48), replacing the 512 px PNG
 - `brandFavicon()` swaps the tab icon for the white-label logo, or redraws the coin in the account's theme colour

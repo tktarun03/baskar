@@ -123,6 +123,7 @@ document.addEventListener('submit', function (e) {
   else if (id === 'brand-form') saveBrand();
   else if (id === 'profile-form') saveProfileInfo();
   else if (id === 'pw-form') changePassword();
+  else if (id === 'receipt-form') saveReceipt();
 });
 
 document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && S.sheet) closeSheet(); });

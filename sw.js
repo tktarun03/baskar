@@ -4,7 +4,7 @@
    - Everything else is cache-first; versioned URLs (?v=…) mean a release never mixes old and new files.
    VERSION must match the top entry of js/core/releases.js (tests/run-tests.js checks); bumping it clears old caches.
    It never sees or stores account data: that lives in cookies and local storage, not in HTTP responses. */
-var VERSION = '2.3.1';
+var VERSION = '2.4';
 var CACHE = 'baskar-' + VERSION;
 var PAGE_TIMEOUT = 4000;
 
@@ -60,5 +60,5 @@ self.addEventListener('fetch', function (e) {
   if (req.method !== 'GET') return;
   var url = new URL(req.url);
   if (req.mode === 'navigate' && url.origin === self.location.origin) { e.respondWith(pageFirst(req)); return; }
-  if (url.origin === self.location.origin || /^(cdnjs\.cloudflare\.com|fonts\.googleapis\.com|fonts\.gstatic\.com)$/.test(url.hostname)) e.respondWith(cacheFirst(req));
+  if (url.origin === self.location.origin || /^(cdnjs\.cloudflare\.com|cdn\.jsdelivr\.net|fonts\.googleapis\.com|fonts\.gstatic\.com)$/.test(url.hostname)) e.respondWith(cacheFirst(req));
 });

@@ -108,6 +108,16 @@ function runSelfTest() {
     check(C, 'Spots the money-out column', cols.debit, 'Withdrawal Amt.');
     check(C, 'Spots the money-in column', cols.credit, 'Deposit Amt.');
     check(C, 'Spots the description column', cols.desc, 'Narration');
+    var RG = 'Receipts';
+    selfTestReceipts().forEach(function (tc) {
+      var r = parseReceipt(tc.text), w = tc.want;
+      if (w.merchant) check(RG, tc.name + ' · store', (r.merchant || '').toLowerCase(), w.merchant.toLowerCase());
+      check(RG, tc.name + ' · total', r.amt, w.amt);
+      if (w.items != null) check(RG, tc.name + ' · items', r.items.length, w.items);
+      if (w.cur) check(RG, tc.name + ' · currency', r.cur, w.cur);
+      if (w.day === 'y') check(RG, tc.name + ' · date', r.ts ? startOfDay(new Date(r.ts)).getTime() : 0, startOfDay(new Date(Date.now() - DAY)).getTime());
+      if (w.hm) check(RG, tc.name + ' · time', r.ts ? ('0' + new Date(r.ts).getHours()).slice(-2) + ':' + ('0' + new Date(r.ts).getMinutes()).slice(-2) : '', w.hm);
+    });
     var B = 'App files';
     var vers = [].slice.call(document.querySelectorAll('script[src^="js/"], link[href^="css/"]')).map(function (el) { var m = (el.getAttribute('src') || el.getAttribute('href') || '').match(/[?&]v=([^&]+)/); return m ? m[1] : '(none)'; });
     check(B, 'Every app file was loaded', vers.length >= 40, true);
